@@ -3,11 +3,11 @@
   <title>无证程序员的PT桑</title>
   
   <subtitle>删库跑路中 ╮(╯▽╰)╭</subtitle>
-  <link href="http://example.com/atom.xml" rel="self"/>
+  <link href="https://boypt.github.io/atom.xml" rel="self"/>
   
-  <link href="http://example.com/"/>
+  <link href="https://boypt.github.io/"/>
   <updated>2021-09-01T08:04:21.118Z</updated>
-  <id>http://example.com/</id>
+  <id>https://boypt.github.io/</id>
   
   <author>
     <name>PTさん</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>在路由器iptables中匹配IPv6动态地址</title>
-    <link href="http://example.com/2018/10/24/match-ipv6/"/>
-    <id>http://example.com/2018/10/24/match-ipv6/</id>
+    <link href="https://boypt.github.io/2018/10/24/match-ipv6/"/>
+    <id>https://boypt.github.io/2018/10/24/match-ipv6/</id>
     <published>2018-10-24T07:59:18.000Z</published>
     <updated>2021-09-01T08:04:21.118Z</updated>
     
@@ -34,16 +34,16 @@
     
     
     
-    <category term="Networking" scheme="http://example.com/categories/Networking/"/>
+    <category term="Networking" scheme="https://boypt.github.io/categories/Networking/"/>
     
     
-    <category term="address" scheme="http://example.com/tags/address/"/>
+    <category term="address" scheme="https://boypt.github.io/tags/address/"/>
     
-    <category term="iptables" scheme="http://example.com/tags/iptables/"/>
+    <category term="iptables" scheme="https://boypt.github.io/tags/iptables/"/>
     
-    <category term="ipv6" scheme="http://example.com/tags/ipv6/"/>
+    <category term="ipv6" scheme="https://boypt.github.io/tags/ipv6/"/>
     
-    <category term="suffix" scheme="http://example.com/tags/suffix/"/>
+    <category term="suffix" scheme="https://boypt.github.io/tags/suffix/"/>
     
   </entry>
   
