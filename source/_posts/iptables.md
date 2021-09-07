@@ -8,69 +8,16 @@ tags:
 
 ![](packet_flow10.png)
 
+# Netfilter Flow Chart
+
 ![](Netfilter-packet-flow.svg.png)
 
 # Firewall Rules
 
-### For debian
+##
 ```
-cat > /etc/iptables.up.rules <<EOF
-*filter
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT ACCEPT [8:1088]
+apt install iptables-persistent
 
-# Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
--A INPUT -i lo -j ACCEPT
--A INPUT ! -i lo -d 127.0.0.0/8 -j REJECT
--A INPUT -d 127.0.0.0/8 ! -i lo -j REJECT --reject-with icmp-port-unreachable 
-
-# Accepts all established inbound connections
--A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-
--A INPUT -i eth0 -p 47 -j ACCEPT
--A INPUT -i eth0 -p tcp -m state --state NEW -m multiport --dports 22,80,443,1723 -j ACCEPT
-#SSH/HTTP/HTTPS/PPTP
-
-# Now you should read up on iptables rules and consider whether ssh access 
-# for everyone is really desired. Most likely you will only allow access from certain IPs.
-
-# Allow ping
--A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
-
-# log iptables denied calls (access via 'dmesg' command)
-#-A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables denied: " --log-level 7
-
-COMMIT
-EOF
-```
-
-### 自动载入 for Debian/Ubuntu
-
-```
-cat >/etc/network/if-up.d/iptables <<EOF
-#!/bin/bash
-/sbin/iptables-restore < /etc/iptables.up.rules
-EOF
-chmod +x /etc/network/if-up.d/iptables
-```
-
-## Clear Firewall
-```
-cat >/usr/local/bin/clear_iptables.sh <<EOF
-#!/bin/bash
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
-iptables -t nat -P PREROUTING ACCEPT
-iptables -t nat -P POSTROUTING ACCEPT
-iptables -t nat -P OUTPUT ACCEPT
-iptables -F
-iptables -t nat -F
-iptables -X
-iptables -t nat -X
-EOF
-chmod +x /usr/local/bin/clear_iptables.sh
 ```
 
 #  NAT as port forwarding 
