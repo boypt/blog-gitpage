@@ -175,6 +175,7 @@
   <!-- Article START -->
   <article class="post-article">
     <section class="markdown-content"><p>家用宽带目前很多都部署了IPv6，家用路由器目前Padavan/Openwrt等系统都能较好地支持了IPv6。不过要充分利用IPv6链接设备，有些坑。</p>
+<span id="more"></span>
 <h3 id="动态变化的IPv6地址"><a href="#动态变化的IPv6地址" class="headerlink" title="动态变化的IPv6地址"></a>动态变化的IPv6地址</h3><p>首先是IPv6地址，不同设备（操作系统）获取的IPv6地址有区别，较为通用的是【无状态EUI-64地址】，操作系统通过网卡的mac地址生成一个64位固定后缀，以及路由器下发的64位前缀，合成一个固定的IPv6地址。</p>
 <p>作为服务端，【无状态EUI-64地址】是较为适合的，Linux发行版很多组件（systemd-netword，dhcpcd等）默认都采用EUI-64地址。 </p>
 <p>另外还有通过DHCPv6下发的地址，可以通过设置静态分发，对应设备（DUID）下发特定地址。作为服务器地址最适合的方式。</p>
@@ -237,7 +238,7 @@
     
       <a class="nav-right" href="/2021/09/07/HG6821M/">
         
-          移动光猫烽火HG6821M
+          移动光猫烽火HG6821M密码
         
         <span class="nav-arrow"> →</span>
       </a>
