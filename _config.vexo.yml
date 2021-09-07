@@ -20,7 +20,7 @@ highlight:
 catalog: true
 
 # donate
-donate: true
+donate: false
 
 # qrcode
 qrcode: false
@@ -56,3 +56,4 @@ mathjax:
 # Local Search Support
 local_search:
   enable: true
+
