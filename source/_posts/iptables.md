@@ -1,7 +1,9 @@
 ---
 title: iptables
 date: 2021-09-07 10:39:44
-tags:
+tags: 
+	- iptables
+	- linux
 ---
 
 # Packet Flow Chart

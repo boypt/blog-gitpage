@@ -27,6 +27,11 @@ jobs:
             ${{ runner.OS }}-npm-cache
       - name: Install Dependencies
         run: npm install
+
+      - name: Patch
+        run: |
+          echo '' > themes/yilia/source-src/js/report.js
+
       - name: Build
         run: npm run build
 

@@ -1,7 +1,10 @@
 ---
 title: auhome-spot-cube
 date: 2021-09-07 10:34:27
-tags: wifi, router, ‎PXH11RWA
+tags: 
+	- wifi 
+	- router
+	- ‎PXH11RWA
 ---
 
 # 日本 au home spot cube 水晶盒子Wifi路由
