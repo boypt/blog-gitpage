@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="yanm1ng&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      iptables笔记 | 无证程序员的PT桑
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+
+  
+  
+    
+<script src="/js/local-search.js"></script>
+
+
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="无证程序员的PT桑" type="application/atom+xml">
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>无证程序员的PT桑</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/series/" class="item-link">Series</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+        <li class="menu-item menu-item-search right-list">
+    <a role="button" class="popup-trigger">
+        <i class="fa fa-search fa-fw"></i>
+    </a>
+</li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/series/" class="menu-link">Series</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+      <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+            <span class="search-icon">
+                <i class="fa fa-search"></i>
+            </span>
+            <div class="search-input-container">
+                <input autocomplete="off" autocapitalize="off"
+                    placeholder="Please enter your keyword(s) to search." spellcheck="false"
+                    type="search" class="search-input">
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa fa-times-circle"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>iptables笔记</h2>
+  <p class="post-date">2018-09-07</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="Packet-Flow-Chart"><a href="#Packet-Flow-Chart" class="headerlink" title="Packet Flow Chart"></a>Packet Flow Chart</h1><p><img src="/2018/09/07/iptables/packet_flow10.png"></p>
+<h1 id="Netfilter-Flow-Chart"><a href="#Netfilter-Flow-Chart" class="headerlink" title="Netfilter Flow Chart"></a>Netfilter Flow Chart</h1><p><img src="/2018/09/07/iptables/Netfilter-packet-flow.svg.png"></p>
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><h2 id=""><a href="#" class="headerlink" title=""></a></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt install iptables-persistent</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="NAT-as-port-forwarding"><a href="#NAT-as-port-forwarding" class="headerlink" title="NAT as port forwarding"></a>NAT as port forwarding</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 数据包进入PREROUTING Chain，DNAT修改来源数据包的目的地址/端口为映射的$DEST_IP:$PORT</span><br><span class="line">iptables -t nat -A PREROUTING -p tcp --dst $WAN_IP --dport 80 -j DNAT --to-destination $DEST_IP:$PORT</span><br><span class="line"></span><br><span class="line"># 此时Packet的目的地址不是本机地址，而是$DEST_IP，进入filter表的FORWARD Chain进行规则审核，要允许其通过（若filter表已是默认允许的，可以忽略本条）</span><br><span class="line">iptables -A FORWARD -p tcp --dst $DEST_IP --dport $PORT -j ACCEPT</span><br><span class="line"></span><br><span class="line"># 进入POSTROUTING Chain，SNAT修改数据包中的来源地址为本网关；若目的机的默认网关就是本机，可以忽略本步（因为如果是目的机的默认网关，不管发往哪里的包都是发回来本网关；不然的话会发去了另外一个网关，无法成为相同一个NAT会话，无法通信）。默认网关的方式不用这句时目标机可以看到来源的真实地址。</span><br><span class="line">iptables -t nat -A POSTROUTING -p tcp --dst $DEST_IP --dport 80 -j SNAT --to-source $LAN_IP</span><br><span class="line"></span><br><span class="line"># 在网关本机和内网其他机器访问WAN_IP这个端口映射，数据包产生在OUTPUT Chain，需要做和PREROUTING相同的操作才能访问到（若不需要，可忽略本步）</span><br><span class="line">iptables -t nat -A POSTROUTING --dst $WAN_IP -p tcp --dport 80 -j DNAT --to-destination $DEST_IP:$PORT</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="NAT-as-gateway"><a href="#NAT-as-gateway" class="headerlink" title="NAT as gateway"></a>NAT as gateway</h1><p>Enable IP Forwarding</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;s/.*net\.ipv4\.ip_forward.*/net.ipv4.ip_forward = 1/&#x27; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>MASQUERADE, pppoe等动态IP环境使用环境</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<p>SNAT, 静态外网IP, 或出口网卡绑定了多个IP时候使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -j SNAT --to-source &lt;IP&gt;</span><br></pre></td></tr></table></figure>
+
+<p>自动调整经pppoe-wan接口发出的TCP数据MSS, PPP链路情况</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t mangle -I POSTROUTING -o pppoe-wan -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="NAT-as-proxy-（双向NAT，举例推特API服务器hosts转发）"><a href="#NAT-as-proxy-（双向NAT，举例推特API服务器hosts转发）" class="headerlink" title="NAT as proxy （双向NAT，举例推特API服务器hosts转发）"></a>NAT as proxy （双向NAT，举例推特API服务器hosts转发）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -d [YOUR SERVER IP] -p tcp -m tcp --dport 443 -j DNAT --to-destination 199.59.148.20:443 </span><br><span class="line">iptables -t nat -A POSTROUTING -d 199.59.148.20 -p tcp -m tcp --dport 443 -j SNAT --to-source [YOUR SERVER IP]</span><br><span class="line"></span><br><span class="line">iptables -A FORWARD -d 199.59.148.20 -p tcp -m tcp --dport 443 -j ACCEPT </span><br><span class="line">iptables -A FORWARD -s 199.59.148.20 -p tcp -m tcp --sport 443 -m state --state RELATED,ESTABLISHED -j ACCEPT </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Iptables-Firewall-后-FTP-服务-List-命令超时"><a href="#Iptables-Firewall-后-FTP-服务-List-命令超时" class="headerlink" title="Iptables Firewall 后 FTP 服务 List 命令超时"></a>Iptables Firewall 后 FTP 服务 List 命令超时</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">modprobe ip_conntrack_ftp</span><br><span class="line">echo &quot;ip_conntrack_ftp&quot; &gt;&gt;/etc/modules</span><br></pre></td></tr></table></figure>
+
+<h1 id="Filter-DNS-from-GFW"><a href="#Filter-DNS-from-GFW" class="headerlink" title="Filter DNS from GFW"></a>Filter DNS from GFW</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT --source 8.8.8.8,8.8.4.4 -p udp --source-port 53 -m dscp ! --dscp 0x00 -j DROP</span><br><span class="line">iptables -A INPUT --source 8.8.8.8,8.8.4.4 -p udp --source-port 53 -m ttl --ttl-gt 48 -j DROP </span><br></pre></td></tr></table></figure>
+
+<h1 id="Quick-fix-for-deprecated-state-module-since-Dec-2012"><a href="#Quick-fix-for-deprecated-state-module-since-Dec-2012" class="headerlink" title="Quick fix for deprecated state module [since Dec 2012]"></a>Quick fix for deprecated state module [since Dec 2012]</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &quot;s/-m state --state/-m conntrack --ctstate/g&quot; /etc/iptables/iptables.rules</span><br></pre></td></tr></table></figure>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#iptables" >
+    <span class="tag-code">iptables</span>
+  </a>
+
+  <a href="/tags#linux" >
+    <span class="tag-code">linux</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/2018/10/24/match-ipv6/">
+        
+          在路由器iptables中匹配IPv6动态地址
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Packet-Flow-Chart"><span class="toc-nav-text">Packet Flow Chart</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Netfilter-Flow-Chart"><span class="toc-nav-text">Netfilter Flow Chart</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Firewall-Rules"><span class="toc-nav-text">Firewall Rules</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link"><span class="toc-nav-text"></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#NAT-as-port-forwarding"><span class="toc-nav-text">NAT as port forwarding</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#NAT-as-gateway"><span class="toc-nav-text">NAT as gateway</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#NAT-as-proxy-%EF%BC%88%E5%8F%8C%E5%90%91NAT%EF%BC%8C%E4%B8%BE%E4%BE%8B%E6%8E%A8%E7%89%B9API%E6%9C%8D%E5%8A%A1%E5%99%A8hosts%E8%BD%AC%E5%8F%91%EF%BC%89"><span class="toc-nav-text">NAT as proxy （双向NAT，举例推特API服务器hosts转发）</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Iptables-Firewall-%E5%90%8E-FTP-%E6%9C%8D%E5%8A%A1-List-%E5%91%BD%E4%BB%A4%E8%B6%85%E6%97%B6"><span class="toc-nav-text">Iptables Firewall 后 FTP 服务 List 命令超时</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Filter-DNS-from-GFW"><span class="toc-nav-text">Filter DNS from GFW</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Quick-fix-for-deprecated-state-module-since-Dec-2012"><span class="toc-nav-text">Quick fix for deprecated state module [since Dec 2012]</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://boypt.github.io/2018/09/07/iptables/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2021 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
