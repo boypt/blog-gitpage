@@ -1,9 +1,11 @@
 ---
-title: iptables
-date: 2021-09-07 10:39:44
+title: iptables笔记
+date: 2018-09-07 10:39:44
 tags: 
 	- iptables
 	- linux
+categories:
+  - - Networking
 ---
 
 # Packet Flow Chart

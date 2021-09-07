@@ -1,3 +1,9 @@
 [submodule "themes/yilia"]
 	path = themes/yilia
 	url = https://github.com/litten/hexo-theme-yilia.git
+[submodule "themes/even"]
+	path = themes/even
+	url = https://github.com/ahonn/hexo-theme-even
+[submodule "themes/vexo"]
+	path = themes/vexo
+	url = https://github.com/yanm1ng/hexo-theme-vexo.git

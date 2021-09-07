@@ -1,14 +1,15 @@
 ---
-title: auhome-spot-cube
+title: 日本 au home spot cube 水晶盒子Wifi路由
 date: 2021-09-07 10:34:27
 tags: 
 	- wifi 
 	- router
 	- ‎PXH11RWA
+categories:
+  - - Networking
 ---
 
 # 日本 au home spot cube 水晶盒子Wifi路由
-
 
 ## 原厂固件5G加入中国频段方法
 
