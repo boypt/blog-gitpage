@@ -1,3 +1,1 @@
-# Blog
-
-[BLOG](boypt.github.io)
+# [BLOG](https://boypt.github.io)
