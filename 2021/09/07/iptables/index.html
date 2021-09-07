@@ -6,15 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://boypt.github.io">
-  <title>Archives: 2018 | 无证程序员的PT桑</title>
+  <title>iptables | 无证程序员的PT桑</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="无证程序员的PT桑">
-<meta property="og:url" content="https://boypt.github.io/archives/2018/index.html">
+  <meta name="description" content="Packet Flow Chart Netfilter Flow Chart Firewall Rules12apt install iptables-persistent  NAT as port forwarding1234567891011# 数据包进入PREROUTING Chain，DNAT修改来源数据包的目的地址&#x2F;端口为映射的$DEST_IP:$PORTiptables -t nat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iptables">
+<meta property="og:url" content="https://boypt.github.io/2021/09/07/iptables/index.html">
 <meta property="og:site_name" content="无证程序员的PT桑">
+<meta property="og:description" content="Packet Flow Chart Netfilter Flow Chart Firewall Rules12apt install iptables-persistent  NAT as port forwarding1234567891011# 数据包进入PREROUTING Chain，DNAT修改来源数据包的目的地址&#x2F;端口为映射的$DEST_IP:$PORTiptables -t nat">
 <meta property="og:locale">
+<meta property="og:image" content="https://boypt.github.io/2021/09/07/iptables/packet_flow10.png">
+<meta property="og:image" content="https://boypt.github.io/2021/09/07/iptables/Netfilter-packet-flow.svg.png">
+<meta property="article:published_time" content="2021-09-07T02:39:44.000Z">
+<meta property="article:modified_time" content="2021-09-07T03:23:45.728Z">
 <meta property="article:author" content="PTさん">
+<meta property="article:tag" content="iptables">
+<meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://boypt.github.io/2021/09/07/iptables/packet_flow10.png">
   
     <link rel="alternative" href="/atom.xml" title="无证程序员的PT桑" type="application/atom+xml">
   
@@ -150,36 +159,62 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-iptables" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/24/match-ipv6/" class="archive-article-date">
-  	<time datetime="2018-10-24T07:59:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-24</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/24/match-ipv6/">在路由器iptables中匹配IPv6动态地址</a>
+    <h1 class="article-title" itemprop="name">
+      iptables
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/09/07/iptables/" class="archive-article-date">
+  	<time datetime="2021-09-07T02:39:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Packet-Flow-Chart"><a href="#Packet-Flow-Chart" class="headerlink" title="Packet Flow Chart"></a>Packet Flow Chart</h1><p><img src="/2021/09/07/iptables/packet_flow10.png"></p>
+<h1 id="Netfilter-Flow-Chart"><a href="#Netfilter-Flow-Chart" class="headerlink" title="Netfilter Flow Chart"></a>Netfilter Flow Chart</h1><p><img src="/2021/09/07/iptables/Netfilter-packet-flow.svg.png"></p>
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><h2 id=""><a href="#" class="headerlink" title=""></a></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt install iptables-persistent</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="NAT-as-port-forwarding"><a href="#NAT-as-port-forwarding" class="headerlink" title="NAT as port forwarding"></a>NAT as port forwarding</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 数据包进入PREROUTING Chain，DNAT修改来源数据包的目的地址/端口为映射的$DEST_IP:$PORT</span><br><span class="line">iptables -t nat -A PREROUTING -p tcp --dst $WAN_IP --dport 80 -j DNAT --to-destination $DEST_IP:$PORT</span><br><span class="line"></span><br><span class="line"># 此时Packet的目的地址不是本机地址，而是$DEST_IP，进入filter表的FORWARD Chain进行规则审核，要允许其通过（若filter表已是默认允许的，可以忽略本条）</span><br><span class="line">iptables -A FORWARD -p tcp --dst $DEST_IP --dport $PORT -j ACCEPT</span><br><span class="line"></span><br><span class="line"># 进入POSTROUTING Chain，SNAT修改数据包中的来源地址为本网关；若目的机的默认网关就是本机，可以忽略本步（因为如果是目的机的默认网关，不管发往哪里的包都是发回来本网关；不然的话会发去了另外一个网关，无法成为相同一个NAT会话，无法通信）。默认网关的方式不用这句时目标机可以看到来源的真实地址。</span><br><span class="line">iptables -t nat -A POSTROUTING -p tcp --dst $DEST_IP --dport 80 -j SNAT --to-source $LAN_IP</span><br><span class="line"></span><br><span class="line"># 在网关本机和内网其他机器访问WAN_IP这个端口映射，数据包产生在OUTPUT Chain，需要做和PREROUTING相同的操作才能访问到（若不需要，可忽略本步）</span><br><span class="line">iptables -t nat -A POSTROUTING --dst $WAN_IP -p tcp --dport 80 -j DNAT --to-destination $DEST_IP:$PORT</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="NAT-as-gateway"><a href="#NAT-as-gateway" class="headerlink" title="NAT as gateway"></a>NAT as gateway</h1><p>Enable IP Forwarding</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;s/.*net\.ipv4\.ip_forward.*/net.ipv4.ip_forward = 1/&#x27; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>MASQUERADE, pppoe等动态IP环境使用环境</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<p>SNAT, 静态外网IP, 或出口网卡绑定了多个IP时候使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -j SNAT --to-source &lt;IP&gt;</span><br></pre></td></tr></table></figure>
+
+<p>自动调整经pppoe-wan接口发出的TCP数据MSS, PPP链路情况</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t mangle -I POSTROUTING -o pppoe-wan -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="NAT-as-proxy-（双向NAT，举例推特API服务器hosts转发）"><a href="#NAT-as-proxy-（双向NAT，举例推特API服务器hosts转发）" class="headerlink" title="NAT as proxy （双向NAT，举例推特API服务器hosts转发）"></a>NAT as proxy （双向NAT，举例推特API服务器hosts转发）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -d [YOUR SERVER IP] -p tcp -m tcp --dport 443 -j DNAT --to-destination 199.59.148.20:443 </span><br><span class="line">iptables -t nat -A POSTROUTING -d 199.59.148.20 -p tcp -m tcp --dport 443 -j SNAT --to-source [YOUR SERVER IP]</span><br><span class="line"></span><br><span class="line">iptables -A FORWARD -d 199.59.148.20 -p tcp -m tcp --dport 443 -j ACCEPT </span><br><span class="line">iptables -A FORWARD -s 199.59.148.20 -p tcp -m tcp --sport 443 -m state --state RELATED,ESTABLISHED -j ACCEPT </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Iptables-Firewall-后-FTP-服务-List-命令超时"><a href="#Iptables-Firewall-后-FTP-服务-List-命令超时" class="headerlink" title="Iptables Firewall 后 FTP 服务 List 命令超时"></a>Iptables Firewall 后 FTP 服务 List 命令超时</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">modprobe ip_conntrack_ftp</span><br><span class="line">echo &quot;ip_conntrack_ftp&quot; &gt;&gt;/etc/modules</span><br></pre></td></tr></table></figure>
+
+<h1 id="Filter-DNS-from-GFW"><a href="#Filter-DNS-from-GFW" class="headerlink" title="Filter DNS from GFW"></a>Filter DNS from GFW</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT --source 8.8.8.8,8.8.4.4 -p udp --source-port 53 -m dscp ! --dscp 0x00 -j DROP</span><br><span class="line">iptables -A INPUT --source 8.8.8.8,8.8.4.4 -p udp --source-port 53 -m ttl --ttl-gt 48 -j DROP </span><br></pre></td></tr></table></figure>
+
+<h1 id="Quick-fix-for-deprecated-state-module-since-Dec-2012"><a href="#Quick-fix-for-deprecated-state-module-since-Dec-2012" class="headerlink" title="Quick fix for deprecated state module [since Dec 2012]"></a>Quick fix for deprecated state module [since Dec 2012]</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &quot;s/-m state --state/-m conntrack --ctstate/g&quot; /etc/iptables/iptables.rules</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,44 +224,61 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">address</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">ipv6</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">suffix</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">linux</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Networking//" class="article-tag-list-link color1">Networking</a>
-        		</li>
-      		
-		</ul>
-	</div>
+      
 
+      
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2021/09/07/auhome-spot-cube/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">auhome-spot-cube</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -249,8 +301,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
