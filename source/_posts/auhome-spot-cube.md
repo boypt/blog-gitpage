@@ -9,7 +9,12 @@ categories:
   - - Networking
 ---
 
-# 日本 au home spot cube 水晶盒子Wifi路由
+au home spot cube 是个挺低配的小路由，可能是最便宜的带5G频段（802.11n，aka WIFI 4）的设备。
+
+没啥好折腾的，原版固件就很稳定，静静地当个带机量不大的小AP挺好的。
+
+
+<!-- more -->
 
 ## 原厂固件5G加入中国频段方法
 

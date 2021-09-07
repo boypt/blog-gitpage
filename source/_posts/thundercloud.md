@@ -8,7 +8,8 @@ categories:
   - - Networking
 ---
 
-# 迅雷下载宝使用OPENWRT 21.02正式版
+迅雷下载宝使用OPENWRT 21.02正式版
+<!-- more -->
 
 Breed下直接刷入本来直接可用，没有太多需要折腾的。但是空间不大，而下载宝有个SD卡槽，可以折腾ExtRoot扩容。
 
