@@ -10,7 +10,7 @@
   
   <title>
     
-      使用Docker的Openwrt SDK编译环境 | 无证程序员的PT桑
+      OpenVPN 客户端间选择性互通 | 无证程序员的PT桑
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -165,8 +165,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>使用Docker的Openwrt SDK编译环境</h2>
-  <p class="post-date">2021-09-09</p>
+  <h2>OpenVPN 客户端间选择性互通</h2>
+  <p class="post-date">2021-09-28</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -174,27 +174,26 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><p>Openwrt的编译环境算是比较易用的，只要下载对应设备的sdk包，解压就能使用。</p>
-<p>不过一些基础程序包还是依赖原生系统，如果原系统的版本出现冲突，又会有麻烦。不过openwrt官方维护的各种架构和型号的docker镜像，基本都是特定版本的debian，统一化了环境，这就方便了许多。</p>
-<span id="more"></span>
+    <section class="markdown-content"><p>OpenVPN服务器中若配置了<code>client-to-client</code>, 终端之间是无限制互通的。配置文档中如此描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Uncomment this directive to allow different</span><br><span class="line"># clients to be able to &quot;see&quot; each other.</span><br><span class="line"># By default, clients will only see the server.</span><br><span class="line"># To force clients to only see the server, you</span><br><span class="line"># will also need to appropriately firewall the</span><br><span class="line"># server&#x27;s TUN/TAP interface.</span><br><span class="line">; client-to-client</span><br></pre></td></tr></table></figure>
 
-<h2 id="例子：-给openwrt-21-02编译一个aria2-1-36"><a href="#例子：-给openwrt-21-02编译一个aria2-1-36" class="headerlink" title="例子： 给openwrt 21.02编译一个aria2 1.36"></a>例子： 给openwrt 21.02编译一个aria2 1.36</h2><p>openwrt 21.02 版本时候，aria2 才1.35，所以正式版仓库里面不会有1.36，可以自己编一个。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># 拖回一个镜像，这里以一个mtk 7621设备为例子</span><br><span class="line">docker pull openwrtorg/sdk:mipsel_24kc-openwrt-21.02</span><br><span class="line"></span><br><span class="line"># 开一个临时镜像一用，在里面编译完就不要了，所以用上了--rm，</span><br><span class="line"># 里面的终端做任何事情只要退了就一切消失</span><br><span class="line">docker run -it --rm openwrtorg/sdk:mipsel_24kc-openwrt-21.02 /bin/bash</span><br><span class="line"></span><br><span class="line"># 里面是个debian10的普通用户，但是vim什么的都没有，随便搞一下</span><br><span class="line"></span><br><span class="line">sudo sed -i &#x27;s|deb.debian.org|mirrors.aliyun.com|;s|security.debian.org|mirrors.aliyun.com|&#x27; /etc/apt/sources.list</span><br><span class="line">sudo apt update </span><br><span class="line"></span><br><span class="line"># lrzsz是为了方便跟本地传文件，不然编译完要回去用docker copy命令拷贝多麻烦，</span><br><span class="line"># sz 一下就能把容器里面的文件发到终端了</span><br><span class="line">sudo apt install vim-tiny lrzsz</span><br><span class="line"></span><br><span class="line">#普通用户的根目录就是openwrt的编译目录</span><br><span class="line"></span><br><span class="line">cp feeds.conf.default feeds.conf</span><br><span class="line">vim feeds.conf</span><br><span class="line"># 复制一份配置, 因为aria2只在packages仓库，因此只保留一行</span><br><span class="line"># src-git packages https://git.openwrt.org/feed/packages.git^65057dcbb5de371503c9159de3d45824bec482e0</span><br><span class="line"># 又因为后面的^65057...是21.02版本的id，我需要最新版的，去掉。</span><br><span class="line"># 就变成 src-git packages https://git.openwrt.org/feed/packages.git</span><br><span class="line"></span><br><span class="line"># 从这里开始是需要联网操作的，如果环境在墙内需要设置代理，随便指定个http代理的就好</span><br><span class="line">export http_proxy=http://192.168.0.99:3128</span><br><span class="line"></span><br><span class="line">./scripts/feeds update packages</span><br><span class="line"># feeds 命令是同步仓库里面的包源码到本地</span><br><span class="line"></span><br><span class="line">./scripts/feeds install aria2</span><br><span class="line"># 因为aria2 1.36已经在仓库里面了，不需要改源码</span><br><span class="line"># 如果仓库没及时更新，可以修改package/feeds/packages/aria2/Makefile</span><br><span class="line"></span><br><span class="line"># 直接开片</span><br><span class="line">make package/aria2/compile</span><br><span class="line"></span><br><span class="line"># 期间会出现menuconfig，需要找到选择编译模块等等的</span><br><span class="line"># 完成后直接在bin目录里面找到对应的ipk，以及对应的依赖</span><br><span class="line"># 打包后sz出来发到设备里面安装即可</span><br></pre></td></tr></table></figure></section>
+<p>如果想要指定特定终端能互通，特定不能通，不能打开这个选项。</p>
+<p>首先要开启配置<code>topology subnet</code>。重点。</p>
+<p>此时服务器的tun0上是可以看到终端所有数据包了，要终端互通需要设置内核转发：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;&gt; /etc/sysctl.conf &lt;&lt;EOF</span><br><span class="line"># for openvpn client packet forward</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl -p /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<p>最后通过iptables的FORWARD规则，屏蔽特定不允许互通的网段。即可实现。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A FORWARD -i tun0 -o tun0 -s 10.15.100.0/24 -d 10.15.100.0/24 -j DROP</span><br></pre></td></tr></table></figure>
+
+<p>原理摘自<a target="_blank" rel="noopener" href="https://serverfault.com/questions/736274/openvpn-client-to-client">Stackoverflow一篇帖子</a>，摘抄如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">If client-to-client is enabled, the VPN server forwards client-to-client packets internally without sending them to the IP layer of the host (i.e. to the kernel). The host networking stack does not see those packets at all.</span><br><span class="line"></span><br><span class="line">           .-------------------.</span><br><span class="line">           | IP Layer          |</span><br><span class="line">           &#x27;-------------------&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">           .-------------------.</span><br><span class="line">           | TUN device (tun0) |</span><br><span class="line">           &#x27;-------------------&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">           .-------------------.</span><br><span class="line">           | OpenVPN server    |</span><br><span class="line">           &#x27;-------------------&#x27;</span><br><span class="line">             ^           |</span><br><span class="line">          1  |           |  2   </span><br><span class="line">             |           v</span><br><span class="line"> .----------------.  .----------------.</span><br><span class="line"> | Client a       |  | Client b       |</span><br><span class="line"> &#x27;----------------&#x27;  &#x27;----------------&#x27;</span><br><span class="line">If client-to-client is disabled, the packets from a client to another client go through the host IP layer (iptables, routing table, etc.) of the machine hosting the VPN server: if IP forwarding is enabled, the host might forward the packet (using its routing table) again to the TUN interface and the VPN daemon will forward the packet to the correct client inside the tunnel.</span><br><span class="line"></span><br><span class="line">           .-------------------.</span><br><span class="line">           | IP Layer          |  (4) routing, firewall, NAT, etc.</span><br><span class="line">           &#x27;-------------------&#x27;      (iptables, nftables, conntrack, tc, etc.)</span><br><span class="line">              ^          |</span><br><span class="line">          3   |          |  5</span><br><span class="line">              |          v</span><br><span class="line">           .-------------------.</span><br><span class="line">           | TUN device (tun0) |</span><br><span class="line">           &#x27;-------------------&#x27;</span><br><span class="line">             ^           |</span><br><span class="line">          2  |           |  6  </span><br><span class="line">             |           v</span><br><span class="line">           .-------------------.</span><br><span class="line">           | OpenVPN server    |</span><br><span class="line">           &#x27;-------------------&#x27;</span><br><span class="line">             ^           |</span><br><span class="line">          1  |           |  7  </span><br><span class="line">             |           v</span><br><span class="line"> .----------------.  .----------------.</span><br><span class="line"> | Client a       |  | Client b       |</span><br><span class="line"> &#x27;----------------&#x27;  &#x27;----------------&#x27;</span><br><span class="line">In this case (client-to-client disabled), you can block the client-to-client packets using iptables:</span><br><span class="line"></span><br><span class="line"> iptables -A FORWARD -i tun0 -o tun0 -j DROP</span><br><span class="line">where tun0 is your VPN interface.</span><br></pre></td></tr></table></figure></section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#openwrt" >
-    <span class="tag-code">openwrt</span>
-  </a>
-
-  <a href="/tags#docker" >
-    <span class="tag-code">docker</span>
-  </a>
-
-  <a href="/tags#sdk" >
-    <span class="tag-code">sdk</span>
+  <a href="/tags#networking" >
+    <span class="tag-code">networking</span>
   </a>
 
       </div>
@@ -205,20 +204,13 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2021/09/07/ar5b22/">
+      <a class="nav-left" href="/2021/09/09/openwrtsdk/">
         <span class="nav-arrow">← </span>
         
-          无线网卡AR5B22的5G频段
+          使用Docker的Openwrt SDK编译环境
         
       </a>
     
-    
-      <a class="nav-right" href="/2021/09/28/openvpn-client2client-limit/">
-        
-          OpenVPN 客户端间选择性互通
-        
-        <span class="nav-arrow"> →</span>
-      </a>
     
   </div>
 
@@ -240,7 +232,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9A-%E7%BB%99openwrt-21-02%E7%BC%96%E8%AF%91%E4%B8%80%E4%B8%AAaria2-1-36"><span class="toc-nav-text">例子： 给openwrt 21.02编译一个aria2 1.36</span></a></li></ol>
+      <ol class="nav">none</ol>
     
   </div>
 </aside>
@@ -250,7 +242,7 @@
 
 <script>
   (function () {
-    var url = 'https://boypt.github.io/2021/09/09/openwrtsdk/';
+    var url = 'https://boypt.github.io/2021/09/28/openvpn-client2client-limit/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
