@@ -46,9 +46,9 @@ iptables -A FORWARD -i tun0 -o tun0 -s 10.15.100.0/24 -d 10.15.100.0/24 -j DROP
 
 原理摘自[Stackoverflow一篇帖子](https://serverfault.com/questions/736274/openvpn-client-to-client)，摘抄如下。
 
-```
-If client-to-client is enabled, the VPN server forwards client-to-client packets internally without sending them to the IP layer of the host (i.e. to the kernel). The host networking stack does not see those packets at all.
+If `client-to-client` is enabled, the VPN server forwards client-to-client packets internally without sending them to the IP layer of the host (i.e. to the kernel). The host networking stack does not see those packets at all.
 
+```
            .-------------------.
            | IP Layer          |
            '-------------------'
@@ -68,8 +68,10 @@ If client-to-client is enabled, the VPN server forwards client-to-client packets
  .----------------.  .----------------.
  | Client a       |  | Client b       |
  '----------------'  '----------------'
+```
 If client-to-client is disabled, the packets from a client to another client go through the host IP layer (iptables, routing table, etc.) of the machine hosting the VPN server: if IP forwarding is enabled, the host might forward the packet (using its routing table) again to the TUN interface and the VPN daemon will forward the packet to the correct client inside the tunnel.
 
+```
            .-------------------.
            | IP Layer          |  (4) routing, firewall, NAT, etc.
            '-------------------'      (iptables, nftables, conntrack, tc, etc.)
@@ -91,8 +93,12 @@ If client-to-client is disabled, the packets from a client to another client go 
  .----------------.  .----------------.
  | Client a       |  | Client b       |
  '----------------'  '----------------'
+```
+
 In this case (client-to-client disabled), you can block the client-to-client packets using iptables:
 
- iptables -A FORWARD -i tun0 -o tun0 -j DROP
-where tun0 is your VPN interface.
 ```
+ iptables -A FORWARD -i tun0 -o tun0 -j DROP
+```
+
+where tun0 is your VPN interface.
