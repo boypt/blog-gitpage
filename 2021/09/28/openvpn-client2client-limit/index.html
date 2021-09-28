@@ -174,12 +174,15 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><p>OpenVPN服务器中若配置了<code>client-to-client</code>, 终端之间是无限制互通的。配置文档中如此描述：</p>
+    <section class="markdown-content"><p>OpenVPN服务器中若配置了<code>client-to-client</code>, 终端之间是无限制互通的。</p>
+<span id="more"></span>
+
+<p>配置文档中如此描述：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Uncomment this directive to allow different</span><br><span class="line"># clients to be able to &quot;see&quot; each other.</span><br><span class="line"># By default, clients will only see the server.</span><br><span class="line"># To force clients to only see the server, you</span><br><span class="line"># will also need to appropriately firewall the</span><br><span class="line"># server&#x27;s TUN/TAP interface.</span><br><span class="line">; client-to-client</span><br></pre></td></tr></table></figure>
 
 <p>如果想要指定特定终端能互通，特定不能通，不能打开这个选项。</p>
-<p>首先要开启配置<code>topology subnet</code>。重点。</p>
-<p>此时服务器的tun0上是可以看到终端所有数据包了，要终端互通需要设置内核转发：</p>
+<p>首先要开启配置<code>topology subnet</code>。</p>
+<p>此时服务器的tun0上是可以看到终端所有数据包了，即终端数据会进入服务器的内核IP Stack。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;&gt; /etc/sysctl.conf &lt;&lt;EOF</span><br><span class="line"># for openvpn client packet forward</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl -p /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
 
 <p>最后通过iptables的FORWARD规则，屏蔽特定不允许互通的网段。即可实现。</p>
@@ -192,8 +195,16 @@
       <div class="tags">
         <span>Tags:</span>
         
+  <a href="/tags#linux" >
+    <span class="tag-code">linux</span>
+  </a>
+
   <a href="/tags#networking" >
     <span class="tag-code">networking</span>
+  </a>
+
+  <a href="/tags#openvpn" >
+    <span class="tag-code">openvpn</span>
   </a>
 
       </div>

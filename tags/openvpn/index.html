@@ -10,7 +10,7 @@
   
   <title>
     
-      Series | 无证程序员的PT桑
+      无证程序员的PT桑
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -165,107 +165,87 @@
 </header>
 
     <div id="article-banner">
-  <h2>Series</h2>
-  <p class="post-date">Series by Categories</p>
+  <h2>Archives</h2>
+  <p class="post-date">Archives</p>
 </div>
-
-
-
-
-<main class="app-body">
-  <div id="category-cloud">
-      
-        <a class="category2" data-name="category-networking">networking</a>
-      
-        <a class="category1" data-name="category-Networking">Networking</a>
-      
-  </div>
+<main class="app-body" id="archives">
+  
+  
+  
+    <section class="time-section">
+  <h1 class="section-year">
+    2021
+  </h1>
+  <div class="section-list">
     
+    
+      <div class="section-list-item">
+        <a href="/2021/09/28/openvpn-client2client-limit/" class="archive-title">OpenVPN 客户端间选择性互通</a>
+        <p class="archive-date">09-28</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2021/09/09/openwrtsdk/" class="archive-title">使用Docker的Openwrt SDK编译环境</a>
+        <p class="archive-date">09-09</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2021/09/07/ar5b22/" class="archive-title">无线网卡AR5B22的5G频段</a>
+        <p class="archive-date">09-07</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2021/09/07/dw33d/" class="archive-title">大麦DW33D刷机总结帖</a>
+        <p class="archive-date">09-07</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2021/09/07/thundercloud/" class="archive-title">迅雷下载宝OPENWRT官方版本折腾SD卡扩容</a>
+        <p class="archive-date">09-07</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2021/09/07/auhome-spot-cube/" class="archive-title">日本 au home spot cube 水晶盒子Wifi路由</a>
+        <p class="archive-date">09-07</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2021/09/07/HG6821M/" class="archive-title">移动光猫烽火HG6821M密码</a>
+        <p class="archive-date">09-07</p>
+      </div>
+    
+  </div>
+</section>
   
-    <div class="category-list">
-      <h3 class="category-name" id="category-networking">networking</h3>
-      
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/28/openvpn-client2client-limit/">OpenVPN 客户端间选择性互通</a>
-          </li>
-        </ul>
-      
-    </div>
-  
-    <div class="category-list">
-      <h3 class="category-name" id="category-Networking">Networking</h3>
-      
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2018/09/07/iptables/">iptables笔记</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2018/10/24/match-ipv6/">在路由器iptables中匹配IPv6动态地址</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/07/HG6821M/">移动光猫烽火HG6821M密码</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/07/auhome-spot-cube/">日本 au home spot cube 水晶盒子Wifi路由</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/07/thundercloud/">迅雷下载宝OPENWRT官方版本折腾SD卡扩容</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/07/dw33d/">大麦DW33D刷机总结帖</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/07/ar5b22/">无线网卡AR5B22的5G频段</a>
-          </li>
-        </ul>
-      
-        <ul class="category-preview">
-          <li>
-            <a href="/2021/09/09/openwrtsdk/">使用Docker的Openwrt SDK编译环境</a>
-          </li>
-        </ul>
-      
-    </div>
+    <section class="time-section">
+  <h1 class="section-year">
+    2018
+  </h1>
+  <div class="section-list">
+    
+    
+      <div class="section-list-item">
+        <a href="/2018/10/24/match-ipv6/" class="archive-title">在路由器iptables中匹配IPv6动态地址</a>
+        <p class="archive-date">10-24</p>
+      </div>
+    
+      <div class="section-list-item">
+        <a href="/2018/09/07/iptables/" class="archive-title">iptables笔记</a>
+        <p class="archive-date">09-07</p>
+      </div>
+    
+  </div>
+</section>
   
 </main>
 
 <script>
   (function () {
-    var url = 'https://boypt.github.io/series/index.html'
-    $('#article-banner').geopattern(url)
-    $('.header').removeClass('fixed-header')
-
-    var category = location.hash.replace('#', '')
-    if (category) {
-      var categoryId = "#category-" + category;
-      $("html, body").animate({
-        scrollTop: $(categoryId).offset().top 
-      }, 400)
-    }
+    var url = 'https://boypt.github.io/tags/openvpn/index.html';
+    $('#article-banner').geopattern(url);
+    $('.header').removeClass('fixed-header');
   })();
 </script>
-
     <div class="scroll-top">
   <span class="arrow-icon"></span>
 </div>
