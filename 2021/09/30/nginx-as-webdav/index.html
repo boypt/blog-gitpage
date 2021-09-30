@@ -10,7 +10,7 @@
   
   <title>
     
-      OpenVPN 客户端间选择性互通 | 无证程序员的PT桑
+      用Nginx作为Webdav服务器 | 无证程序员的PT桑
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -165,8 +165,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>OpenVPN 客户端间选择性互通</h2>
-  <p class="post-date">2021-09-28</p>
+  <h2>用Nginx作为Webdav服务器</h2>
+  <p class="post-date">2021-09-30</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -174,30 +174,18 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><p>OpenVPN服务器中若配置了<code>client-to-client</code>, 终端之间是无限制互通的。</p>
+    <section class="markdown-content"><p>提供Webdav服务，本来有rclone 、 go-webdav等使用golang的服务端，跑起来是非常方便的，但是如果设备是CPU性能较低内存较小的比如MTK7621，就分分钟卡死整个系统。</p>
+<p>研究后决定用nginx提供webdav。</p>
 <span id="more"></span>
 
-<p>配置文档中如此描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Uncomment this directive to allow different</span><br><span class="line"># clients to be able to &quot;see&quot; each other.</span><br><span class="line"># By default, clients will only see the server.</span><br><span class="line"># To force clients to only see the server, you</span><br><span class="line"># will also need to appropriately firewall the</span><br><span class="line"># server&#x27;s TUN/TAP interface.</span><br><span class="line">; client-to-client</span><br></pre></td></tr></table></figure>
+<p>Nginx的Webdav支持是比较分裂的，一个是官方自带的(ngx_http_dav_module)[<a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_dav_module.html]%E4%BD%86%E6%98%AF%E5%8A%9F%E8%83%BD%E4%B8%8D%E9%BD%90%E5%85%A8%EF%BC%8C%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A8%A1%E5%9D%97(nginx-dav-ext-module)[https://github.com/arut/nginx-dav-ext-module]%E3%80%82%E4%B8%8D%E8%BF%87%E8%BF%99%E4%BA%9B%E4%B8%8D%E7%AE%A1%E5%95%A6%EF%BC%8COpenwrt%E9%87%8C%E9%9D%A2%E7%9A%84%60nginx-all-module%60%E5%8C%85%EF%BC%8C%E6%98%AF%E5%85%A8%E5%B8%A6%E4%BA%86%E9%80%82%E5%90%88%E7%9A%84%E6%A8%A1%E5%9D%97%E4%BA%86%E3%80%82">http://nginx.org/en/docs/http/ngx_http_dav_module.html]但是功能不齐全，需要一个第三方模块(nginx-dav-ext-module)[https://github.com/arut/nginx-dav-ext-module]。不过这些不管啦，Openwrt里面的`nginx-all-module`包，是全带了适合的模块了。</a></p>
+<p>直接上配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">dav_ext_lock_zone zone=davlock:10m;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen       8081 default_server;</span><br><span class="line">    listen       [::]:8081 default_server;</span><br><span class="line">    listen       8083 default_server ssl;</span><br><span class="line">    listen       [::]:8083 default_server ssl;</span><br><span class="line">    ssl_certificate /etc/ssl/my.domain/fullchain.cer;</span><br><span class="line">    ssl_certificate_key /etc/ssl/my.domain/my.domain.key;</span><br><span class="line">    ssl_protocols TLSv1.3 TLSv1.2;</span><br><span class="line">    ssl_ciphers EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS;</span><br><span class="line">    ssl_session_cache shared:TLS:2m;</span><br><span class="line">    ssl_buffer_size 4k;</span><br><span class="line">    ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">    root /mnt;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line"></span><br><span class="line">        # enable creating directories without trailing slash</span><br><span class="line">        set $x $uri$request_method;</span><br><span class="line">        if ($x ~ [^/]MKCOL$) &#123;</span><br><span class="line">            rewrite ^(.*)$ $1/;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        client_body_temp_path /mnt/sda1/.nginxtemp 2;</span><br><span class="line">        autoindex on;</span><br><span class="line">        dav_methods PUT DELETE MKCOL COPY MOVE;</span><br><span class="line">        dav_ext_methods PROPFIND OPTIONS LOCK UNLOCK;</span><br><span class="line">        dav_ext_lock zone=davlock;</span><br><span class="line">        dav_access user:rw group:rw all:rw;</span><br><span class="line">        create_full_put_path on;</span><br><span class="line">        client_max_body_size 0M;</span><br><span class="line">        auth_basic &quot;Authorized Users Only&quot;;</span><br><span class="line">        auth_basic_user_file /etc/nginx/webdavpasswd;</span><br><span class="line">        satisfy any;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>如果想要指定特定终端能互通，特定不能通，不能打开这个选项。</p>
-<p>首先要开启配置<code>topology subnet</code>。</p>
-<p>此时服务器的tun0上是可以看到终端所有数据包了，即终端数据会进入服务器的内核IP Stack。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;&gt; /etc/sysctl.conf &lt;&lt;EOF</span><br><span class="line"># for openvpn client packet forward</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl -p /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
-
-<p>最后通过iptables的FORWARD规则，屏蔽特定不允许互通的网段。即可实现。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A FORWARD -i tun0 -o tun0 -s 10.15.100.0/24 -d 10.15.100.0/24 -j DROP</span><br></pre></td></tr></table></figure>
-
-<p>原理摘自<a target="_blank" rel="noopener" href="https://serverfault.com/questions/736274/openvpn-client-to-client">Stackoverflow一篇帖子</a>，摘抄如下。</p>
-<p>If <code>client-to-client</code> is enabled, the VPN server forwards client-to-client packets internally without sending them to the IP layer of the host (i.e. to the kernel). The host networking stack does not see those packets at all.</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">          .-------------------.</span><br><span class="line">          | IP Layer          |</span><br><span class="line">          &#x27;-------------------&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">          .-------------------.</span><br><span class="line">          | TUN device (tun0) |</span><br><span class="line">          &#x27;-------------------&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">          .-------------------.</span><br><span class="line">          | OpenVPN server    |</span><br><span class="line">          &#x27;-------------------&#x27;</span><br><span class="line">            ^           |</span><br><span class="line">         1  |           |  2   </span><br><span class="line">            |           v</span><br><span class="line">.----------------.  .----------------.</span><br><span class="line">| Client a       |  | Client b       |</span><br><span class="line">&#x27;----------------&#x27;  &#x27;----------------&#x27;</span><br></pre></td></tr></table></figure>
-<p>If client-to-client is disabled, the packets from a client to another client go through the host IP layer (iptables, routing table, etc.) of the machine hosting the VPN server: if IP forwarding is enabled, the host might forward the packet (using its routing table) again to the TUN interface and the VPN daemon will forward the packet to the correct client inside the tunnel.</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">          .-------------------.</span><br><span class="line">          | IP Layer          |  (4) routing, firewall, NAT, etc.</span><br><span class="line">          &#x27;-------------------&#x27;      (iptables, nftables, conntrack, tc, etc.)</span><br><span class="line">             ^          |</span><br><span class="line">         3   |          |  5</span><br><span class="line">             |          v</span><br><span class="line">          .-------------------.</span><br><span class="line">          | TUN device (tun0) |</span><br><span class="line">          &#x27;-------------------&#x27;</span><br><span class="line">            ^           |</span><br><span class="line">         2  |           |  6  </span><br><span class="line">            |           v</span><br><span class="line">          .-------------------.</span><br><span class="line">          | OpenVPN server    |</span><br><span class="line">          &#x27;-------------------&#x27;</span><br><span class="line">            ^           |</span><br><span class="line">         1  |           |  7  </span><br><span class="line">            |           v</span><br><span class="line">.----------------.  .----------------.</span><br><span class="line">| Client a       |  | Client b       |</span><br><span class="line">&#x27;----------------&#x27;  &#x27;----------------&#x27;</span><br></pre></td></tr></table></figure>
-
-<p>In this case (client-to-client disabled), you can block the client-to-client packets using iptables:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A FORWARD -i tun0 -o tun0 -j DROP</span><br></pre></td></tr></table></figure>
-
-<p>where tun0 is your VPN interface.</p>
+<p>配置里面8081端口提供了http、8083提供了tls的https。</p>
+<p>需要注意<code>client_body_temp_path</code>的参数，在webdav上传适合nginx会把临时文件先放到这个路径，然后才转移到实际上传路径。最好放在相同分区的目录下。</p>
+<p><code>auth_basic_user_file</code>是普通的http auth格式。 </p>
+<p>因为开启了<code>autoindex on;</code>，即使不用webdav客户端，直接浏览器访问也是能够下载对应目录和文件的。</p>
 </section>
     <!-- Tags START -->
     
@@ -212,8 +200,8 @@
     <span class="tag-code">networking</span>
   </a>
 
-  <a href="/tags#openvpn" >
-    <span class="tag-code">openvpn</span>
+  <a href="/tags#webdav" >
+    <span class="tag-code">webdav</span>
   </a>
 
       </div>
@@ -224,20 +212,13 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2021/09/09/openwrtsdk/">
+      <a class="nav-left" href="/2021/09/28/openvpn-client2client-limit/">
         <span class="nav-arrow">← </span>
         
-          使用Docker的Openwrt SDK编译环境
+          OpenVPN 客户端间选择性互通
         
       </a>
     
-    
-      <a class="nav-right" href="/2021/09/30/nginx-as-webdav/">
-        
-          用Nginx作为Webdav服务器
-        
-        <span class="nav-arrow"> →</span>
-      </a>
     
   </div>
 
@@ -269,7 +250,7 @@
 
 <script>
   (function () {
-    var url = 'https://boypt.github.io/2021/09/28/openvpn-client2client-limit/';
+    var url = 'https://boypt.github.io/2021/09/30/nginx-as-webdav/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
