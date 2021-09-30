@@ -13,7 +13,9 @@ categories:
 研究后决定用nginx提供webdav。
 <!--more-->
 
-Nginx的Webdav支持是比较分裂的，一个是官方自带的(ngx_http_dav_module)[http://nginx.org/en/docs/http/ngx_http_dav_module.html]但是功能不齐全，需要一个第三方模块(nginx-dav-ext-module)[https://github.com/arut/nginx-dav-ext-module]。不过这些不管啦，Openwrt里面的`nginx-all-module`包，是全带了适合的模块了。
+Nginx的Webdav支持是比较分裂的，一个是官方自带的[ngx_http_dav_module](http://nginx.org/en/docs/http/ngx_http_dav_module.html)但是功能不齐全，需要一个第三方模块[nginx-dav-ext-module](https://github.com/arut/nginx-dav-ext-module)。不过在Openwrt里面直接`opkg install nginx-all-module`，是全带了适合的模块的了。
+
+经测试，nginx提供的webdav访问响应明显好于rclone提供的。大概是MIPS价格下，golang的效率还是受限了。
 
 直接上配置。
 
