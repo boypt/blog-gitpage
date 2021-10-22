@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="boypt&#39;s blog">
+  <meta name="keyword" content="hexo, boypt">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      树莓派使用硬件RTC时钟 | 无证程序员的PT桑
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+
+  
+  
+    
+<script src="/js/local-search.js"></script>
+
+
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="无证程序员的PT桑" type="application/atom+xml">
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>无证程序员的PT桑</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/series/" class="item-link">Series</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a target="_blank" rel="noopener" href="https://github.com/boypt" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+        <li class="menu-item menu-item-search right-list">
+    <a role="button" class="popup-trigger">
+        <i class="fa fa-search fa-fw"></i>
+    </a>
+</li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/series/" class="menu-link">Series</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a target="_blank" rel="noopener" href="https://github.com/boypt" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+      <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+            <span class="search-icon">
+                <i class="fa fa-search"></i>
+            </span>
+            <div class="search-input-container">
+                <input autocomplete="off" autocapitalize="off"
+                    placeholder="Please enter your keyword(s) to search." spellcheck="false"
+                    type="search" class="search-input">
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa fa-times-circle"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>树莓派使用硬件RTC时钟</h2>
+  <p class="post-date">2021-10-22</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>树莓派等各种派，往往都不带硬件时钟，在断电、离线网络等情况下是无法以实际时间运行系统和程序的。解决方式是安装一个RTC时钟模块，成本也不高，但是软硬件各方面可能有一些坑要踩一下。</p>
+<p><img src="/2021/10/22/raspberry-rtc/ds1307.png" alt="DS1307模块"></p>
+<span id="more"></span>
+
+<h2 id="硬件模块"><a href="#硬件模块" class="headerlink" title="硬件模块"></a>硬件模块</h2><p>硬件上可以选择上图这种专门为raspberry 40pin 接口使用的小模块，成本较高（淘宝售价10元+），但是组装性能好一些，跟主板本身能紧密连接。性能方面，ds1307其实只是个计数芯片，实际走时是通过外部32768Hz的晶振，精度可能不会十分准确。另外这个模块扣具一下子占了10个pin口，其中包括模块通信使用的i2c、电源5v/3.3v，以及常用调试的uart ttl口，不过也引出了插针，调试倒不成问题。</p>
+<p>有性能更好的ds3213模块，芯片内部自带晶振，受干扰和晶振质量影响较小，走时较为准确，不过成本高一些。</p>
+<p><img src="/ds3213.png" alt="DS3213模块"></p>
+<p>如果使用更通用的模块，ds1307甚至有卖2块钱的小模块，只是需要另外连接引线。其实这小小模块的性能考虑还挺多的，比如有些模块提供电池充电等等。</p>
+<h2 id="软件配置"><a href="#软件配置" class="headerlink" title="软件配置"></a>软件配置</h2><p>上述这些RTC模块其实使用了i2c通信接口，而树莓派对应的系统基本都要对应的内核模块支持，要驱动起来不算麻烦。</p>
+<p>比如在raspberry 4B，只需要配置<code>/boot/config.txt</code> (具体文档在<code>/boot/overlays/README</code>)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dtoverlay=i2c-rtc,ds1307 </span><br><span class="line">dtparam=i2c=on</span><br></pre></td></tr></table></figure>
+
+<p>具体不通型号稍有区别，可以看<a target="_blank" rel="noopener" href="https://wiki.52pi.com/index.php/DS1307_RTC_Module_with_BAT_for_Raspberry_Pi_SKU%3A_EP-0059">51pi</a>。</p>
+<p>但是根据使用系统的不通，发现并不好用，虽然驱动加上了，系统时间并没有从硬件同步进来（也许是centos系列系统的问题？包括树莓自己的Raspberry Pi OS）。</p>
+<p>查到一个方法是写自己的systemd服务，脚本控制模块加载和同步时间。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/scottlamb/moonfire-nvr/wiki/System-setup#realtime-clock-on-raspberry-pi">addon-hwclock.service</a></p>
+<p>对应的脚本和service如下：</p>
+<p>脚本 <code>/etc/addon-hwclock</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># Use add-on hardware RTC module. See /etc/systemd/system/addon-hwclock.service.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Be verbose so failures can be examined with `journalctl --unit addon-hwclock`.</span></span><br><span class="line"><span class="built_in">set</span> -o errexit</span><br><span class="line"><span class="built_in">set</span> -o xtrace</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$1</span>&quot;</span> = <span class="string">&quot;start&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="comment"># Load the kernel modules needed by the RTC.</span></span><br><span class="line">    <span class="comment"># udevd might do some/all of this later, but we want it now (before root fsck).</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> i2c_bcm2835 rtc_ds1307; <span class="keyword">do</span> /sbin/modprobe <span class="variable">$i</span>; <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Potentially useful debugging commands. Uncomment to taste.</span></span><br><span class="line">    <span class="comment"># /usr/bin/dtc --in-format fs /proc/device-tree</span></span><br><span class="line">    <span class="comment"># /usr/sbin/i2cdetect -y 1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># echo ds3231 0x68 &gt; /sys/class/i2c-adapter/i2c-1/new_device</span></span><br><span class="line">    <span class="built_in">echo</span> ds1307 0x68 &gt; /sys/class/i2c-adapter/i2c-1/new_device</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Debugging, again.</span></span><br><span class="line">    <span class="comment"># /usr/bin/dtc --in-format fs /proc/device-tree</span></span><br><span class="line">    <span class="comment"># /usr/sbin/i2cdetect -y 1</span></span><br><span class="line"></span><br><span class="line">    /sbin/hwclock --hctosys --utc</span><br><span class="line"></span><br><span class="line"><span class="keyword">elif</span> [[ <span class="string">&quot;<span class="variable">$1</span>&quot;</span> = <span class="string">&quot;stop&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    /sbin/hwclock --systohc --utc</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>Service <code>/etc/systemd/system/addon-hwclock.service</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Add-on hardware RTC module</span><br><span class="line">DefaultDependencies=no</span><br><span class="line"></span><br><span class="line"># Run after fake-hwclock so it doesn&#x27;t override the time set from the real hwclock.</span><br><span class="line">After=fake-hwclock.service</span><br><span class="line"></span><br><span class="line"># Filesystems record their last mount time; fsck complains if it&#x27;s in the future.</span><br><span class="line"># Run before the first fsck to avoid this. Earlier in the boot process is better anyway.</span><br><span class="line">Before=sysinit.target systemd-fsck-root.service time-set.target</span><br><span class="line">Conflicts=shutdown.target</span><br><span class="line"></span><br><span class="line"># Note because of the WantedBy=sysinit.target, the system will boot into</span><br><span class="line"># emergency mode on failure. Be a little defensive with the ConditionFileIsExecutable</span><br><span class="line"># to avoid that annoying failure mode.</span><br><span class="line">ConditionFileIsExecutable=/etc/addon-hwclock</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=oneshot</span><br><span class="line">RemainAfterExit=yes</span><br><span class="line"></span><br><span class="line">ExecStart=/etc/addon-hwclock start</span><br><span class="line">ExecStop=/etc/addon-hwclock stop</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=sysinit.target</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后激活使用，把当前时间写入到模块（–systohc）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod a+rx /etc/addon-hwclock</span><br><span class="line">sudo systemctl <span class="built_in">enable</span> addon-hwclock.service</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sh -c <span class="string">&#x27;for i in i2c_bcm2835 rtc_ds1307; do /sbin/modprobe $i; done&#x27;</span></span><br><span class="line">sh -c <span class="string">&#x27;echo ds1307 0x68 &gt; /sys/class/i2c-adapter/i2c-1/new_device&#x27;</span></span><br><span class="line">/sbin/hwclock --systohc --utc</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以重启检查效果了。</p>
+<h2 id="跳坑"><a href="#跳坑" class="headerlink" title="跳坑"></a>跳坑</h2><h3 id="电源稳定性"><a href="#电源稳定性" class="headerlink" title="电源稳定性"></a>电源稳定性</h3><p>发现虽然这么个小模块，也是对电源有要求的，使用主机USB、1A小电源启动树莓派后，会间歇性找不到RTC模块，或者各种其他报错。</p>
+<p>换成5V 2A的电源就稳定了。折腾了不少时间。</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#linux" >
+    <span class="tag-code">linux</span>
+  </a>
+
+  <a href="/tags#raspberry" >
+    <span class="tag-code">raspberry</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2021/09/30/nginx-as-webdav/">
+        <span class="nav-arrow">← </span>
+        
+          用Nginx作为Webdav服务器
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E7%A1%AC%E4%BB%B6%E6%A8%A1%E5%9D%97"><span class="toc-nav-text">硬件模块</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E8%BD%AF%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="toc-nav-text">软件配置</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E8%B7%B3%E5%9D%91"><span class="toc-nav-text">跳坑</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E7%94%B5%E6%BA%90%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="toc-nav-text">电源稳定性</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://boypt.github.io/2021/10/22/raspberry-rtc/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2021 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
