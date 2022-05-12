@@ -199,7 +199,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget http://192.168.0.254/firmware/dw33d-factory.bin</span><br><span class="line">##### 注意长度的0xd00000</span><br><span class="line">#####-&gt; Length: 13631488/0xd00000 (13MB) [application/octet-stream]</span><br><span class="line">flash bank 0 erase 0x0 0xd00000</span><br><span class="line">flash bank 0 write 0x0 0x80000000 0xd00000</span><br></pre></td></tr></table></figure>
 
 <h1 id="关于升级"><a href="#关于升级" class="headerlink" title="关于升级"></a>关于升级</h1><p>测试过从21.02-rc升级到21.02正式版，直接web升级没出现问题。</p>
-<p>但是软件包需要重装，常用工具curl/tcpdump之类。</p>
+<p>但是软件包需要重装，常用工具curl&#x2F;tcpdump之类。</p>
 </section>
     <!-- Tags START -->
     

@@ -193,29 +193,29 @@
 <p>5Ghz</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flash set WLAN1_WSC_DISABLE 1</span><br></pre></td></tr></table></figure>
 <p>害怕被PIN可以看一下这些文字：<br>If the wrong PIN code three times, You will not be able to connect more. Please press the button below to release it.<br>UnLock<br>我也曾mdk3攻击路由器，使它重启，但是攻击5分钟无效。</p>
-<p>==== 2、使用中国5Ghz频道 ====</p>
+<p>&#x3D;&#x3D;&#x3D;&#x3D; 2、使用中国5Ghz频道 &#x3D;&#x3D;&#x3D;&#x3D;</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flash set WLAN0_CHANNEL 149</span><br></pre></td></tr></table></figure>
 
-<p>==== 3、更改时区为东八区 ====</p>
+<p>&#x3D;&#x3D;&#x3D;&#x3D; 3、更改时区为东八区 &#x3D;&#x3D;&#x3D;&#x3D;</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flash set NTP_TIMEZONE -8\ 1</span><br></pre></td></tr></table></figure>
 
-<p>==== 4、更改LAN IP地址 ====</p>
+<p>&#x3D;&#x3D;&#x3D;&#x3D; 4、更改LAN IP地址 &#x3D;&#x3D;&#x3D;&#x3D;</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flash set IP_ADDR 192.168.0.1</span><br><span class="line">flash set SUBNET_MASK 255.255.255.0</span><br><span class="line">flash set DHCP_CLIENT_START 192.168.0.100</span><br><span class="line">flash set DHCP_CLIENT_END 192.168.0.200</span><br></pre></td></tr></table></figure>
 
-<p>==== 5、更改用户名密码 ====</p>
+<p>&#x3D;&#x3D;&#x3D;&#x3D; 5、更改用户名密码 &#x3D;&#x3D;&#x3D;&#x3D;</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flash set SUPER_NAME root</span><br><span class="line">flash set SUPER_PASSWORD plumeria0077</span><br><span class="line">flash set USER_NAME au</span><br><span class="line">flash set USER_PASSWORD 1234</span><br></pre></td></tr></table></figure>
 
-<p>==== 6、修改PIN码 ( 此项修改之后是初始化无法复原的 ) ====</p>
+<p>&#x3D;&#x3D;&#x3D;&#x3D; 6、修改PIN码 ( 此项修改之后是初始化无法复原的 ) &#x3D;&#x3D;&#x3D;&#x3D;</p>
 <p>2.4Ghz</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flash sethw HW_WLAN0_WSC_PIN xxxxxxxx</span><br></pre></td></tr></table></figure>
 <p>5Ghz</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flash sethw HW_WLAN1_WSC_PIN xxxxxxxx</span><br></pre></td></tr></table></figure>
 
-<p>===== sdk固件要刷回原版，可以参考【N500R_TTL+TFTP写入教程】， =====</p>
+<p>&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; sdk固件要刷回原版，可以参考【N500R_TTL+TFTP写入教程】， &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</p>
 <p>注意：</p>
 <ol>
 <li>加电时RESET， 然后192.168.1.6 就可以了，电脑地址要设为192.168.1.x。</li>
-<li>tftp上传的原版固件威编程器固件，大小是8M的。8192kB3. </li>
+<li>tftp上传的原版固件威编程器固件，大小是8M的。8192kB3.</li>
 </ol>
 <p>刷机命令</p>
 <p><code>FLW 0 80500000 800000</code></p>
@@ -223,10 +223,10 @@
 <ol start="5">
 <li>关于5G 149信道设置：虽然设置为149，但在【本机状态】5G信道是36，解决方法：</li>
 </ol>
-<p>打开【系统维护】【系统命令行】或者192.168.0.1/syscmd.asp<br>输入命令：</p>
+<p>打开【系统维护】【系统命令行】或者192.168.0.1&#x2F;syscmd.asp<br>输入命令：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">flash sethw HW_WLAN1_REG_DOMAIN 2</span><br><span class="line">flash sethw HW_WLAN0_REG_DOMAIN 2</span><br></pre></td></tr></table></figure>
 
-<p>重启后进入设置，打开SSID3设置页面(确保5G必须打开)，接着进入【无线设置】或192.168.0.1/wlbasic.asp选频段，默认是自动，<br>可以设置149和153两个国内信道。新版的信道可以输入。<br>再次重启就可以了。<br>可以在【本机状态】查看5G是否是149信道。</p>
+<p>重启后进入设置，打开SSID3设置页面(确保5G必须打开)，接着进入【无线设置】或192.168.0.1&#x2F;wlbasic.asp选频段，默认是自动，<br>可以设置149和153两个国内信道。新版的信道可以输入。<br>再次重启就可以了。<br>可以在【本机状态】查看5G是否是149信道。</p>
 <h1 id="恢复Ccalibration-Power"><a href="#恢复Ccalibration-Power" class="headerlink" title="恢复Ccalibration Power"></a>恢复Ccalibration Power</h1><p>赶紧查了一下，找到了[Embedded System] 手動設定 Ccalibration Power 搞定。</p>
 <p>怎么样修改Ccalibration Power呢，举个栗子，说一下。<br>1、</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HW_WLAN0_TX_POWER_CCK_A=3333333131313131313131313131</span><br></pre></td></tr></table></figure>
