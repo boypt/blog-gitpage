@@ -87,23 +87,23 @@ WinCryptSSHAgent单独exe可以简单地扔到`shell:startup`启动目录开机�
 
 ```
 RunWaitOne(command) {
-    shell := ComObjCreate("WScript.Shell")
-    exec := shell.Exec(ComSpec " /C " command)
-    return exec.StdOut.ReadAll()
+  shell := ComObjCreate("WScript.Shell")
+  exec := shell.Exec(ComSpec " /C " command)
+  return exec.StdOut.ReadAll()
 }
 
 ;SSH KEYAGENT
 >!k::
-	Process,Exist,WinCryptSSHAgent.exe
-	If (ErrorLevel = 0) {
-		Run, WinCryptSSHAgent.exe
-		Sleep, 2000
-	}
-	keys := RunWaitOne("ssh-add -l")
-	if !InStr(keys, "boypt@PTDESKTOP-DRCOM") {
-		Run, %ComSpec% /C ssh-add %USERPROFILE%\.ssh\id_ed25519
-	}
-	Return
+  Process,Exist,WinCryptSSHAgent.exe
+  If (ErrorLevel = 0) {
+    Run, WinCryptSSHAgent.exe
+    Sleep, 2000
+  }
+  keys := RunWaitOne("ssh-add -l")
+  if !InStr(keys, "me@mylocation") {
+    Run, %ComSpec% /C ssh-add %USERPROFILE%\.ssh\id_ed25519
+  }
+  Return
 ```
 
 如此配置后，我按下"右Alt+k"，就会开启WinCryptSSHAgent，并出现一个输入key解锁密码终端窗口。
