@@ -180,8 +180,8 @@
 <span id="more"></span>
 
 <p>配置ssh-agent后的最大妙用是使用git更加方便：在多台vps上使用同一个git仓库，传统方式就需要各台机上分别生成key并添加的git仓库的认证列表。配置agent后，agent可以从vps上的程序转发到工作这台机上的agent，从而完成转发认证（agent forward），git仓库上只需存在一个key。你登出后，其他人就不能再推到你的git仓库了。</p>
-<p>这里重点推荐的是(WinCryptSSHAgent)[<a target="_blank" rel="noopener" href="https://github.com/buptczq/WinCryptSSHAgent]%E9%A1%B9%E7%9B%AE%EF%BC%8C%E5%85%B6%E5%AE%9E%E7%8E%B0%E4%BA%86%E4%B8%80%E4%B8%AAssh-agent%E7%A8%8B%E5%BA%8F%EF%BC%8C%E4%BD%86%E6%98%AF%E5%90%8C%E6%97%B6%E5%85%BC%E5%AE%B9pagent">https://github.com/buptczq/WinCryptSSHAgent]项目，其实现了一个ssh-agent程序，但是同时兼容pagent</a>, xagent, hyper-v agent……基本常见的SSH软件都能兼容。</p>
-<p>其实作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。(作者是v2ex网友 swchzq)[<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/565640]%E3%80%82">https://www.v2ex.com/t/565640]。</a></p>
+<p>这里重点推荐的是<a target="_blank" rel="noopener" href="https://github.com/buptczq/WinCryptSSHAgent">WinCryptSSHAgent</a>项目，其实现了一个ssh-agent程序，但是同时兼容pagent, xagent, hyper-v agent……基本常见的SSH软件都能兼容。</p>
+<p>其实作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/565640">作者是v2ex网友 swchzq</a>。</p>
 <p>WinCryptSSHAgent的使用很简单，就单个exe文件，运行后就呆在托盘区，没有需要安装，没有需要配置的地方。（hyper-v agent需要点一次确认安装），而是要配置其他那些ssh终端程序。</p>
 <h2 id="添加密钥"><a href="#添加密钥" class="headerlink" title="添加密钥"></a>添加密钥</h2><p>首先是要把现有的key添加到WinCryptSSHAgent。跟pagent、xagent等程序的设计不同，WinCryptSSHAgent自己不负责维护key的存放，而仅仅作为一个服务端，密钥的来源一个是操作系统内的密钥Store，另外就是通过agent协议添加key。</p>
 <p>如果是像作者的需求，使用Yubikey直接插USB，那这个key就自动加载进去操作系统，程序就会自动找到了，不需要特殊操作。</p>
