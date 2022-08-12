@@ -19,9 +19,9 @@ Win下有很多设计良好的终端软件，但是又有很多使用场景需�
 
 配置ssh-agent后的最大妙用是使用git更加方便：在多台vps上使用同一个git仓库，传统方式就需要各台机上分别生成key并添加的git仓库的认证列表。配置agent后，agent可以从vps上的程序转发到工作这台机上的agent，从而完成转发认证（agent forward），git仓库上只需存在一个key。你登出后，其他人就不能再推到你的git仓库了。
 
-这里重点推荐的是(WinCryptSSHAgent)[https://github.com/buptczq/WinCryptSSHAgent]项目，其实现了一个ssh-agent程序，但是同时兼容pagent, xagent, hyper-v agent……基本常见的SSH软件都能兼容。
+这里重点推荐的是[WinCryptSSHAgent](https://github.com/buptczq/WinCryptSSHAgent)项目，其实现了一个ssh-agent程序，但是同时兼容pagent, xagent, hyper-v agent……基本常见的SSH软件都能兼容。
 
-其实作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。(作者是v2ex网友 swchzq)[https://www.v2ex.com/t/565640]。
+其实作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。[作者是v2ex网友 swchzq](https://www.v2ex.com/t/565640)。
 
 WinCryptSSHAgent的使用很简单，就单个exe文件，运行后就呆在托盘区，没有需要安装，没有需要配置的地方。（hyper-v agent需要点一次确认安装），而是要配置其他那些ssh终端程序。
 
