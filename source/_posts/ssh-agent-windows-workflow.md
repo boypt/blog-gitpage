@@ -31,7 +31,7 @@ WinCryptSSHAgent的使用很简单，就单个exe文件，运行后就呆在托�
 
 如果是像作者的需求，使用Yubikey直接插USB，那这个key就自动加载进去操作系统，程序就会自动找到了，不需要特殊操作。
 
-而传统的文件key，则使用`ssh-add`命令，下面是指使用win10自带的openssh套件的`ssh-add`程序。不过需要先配置好WinSSH的环境才能使用`ssh-add`命令进行交互。见下一节中配置WinSSH部分。
+而传统的文件key，则使用`ssh-add`命令，下面是指使用win10自带的openssh套件的`ssh-add`程序。不过可能需要先配置好WinSSH的环境才能使用`ssh-add`命令进行交互。见下一节中配置WinSSH部分。
 
 
 ## 配置各种终端
@@ -40,17 +40,21 @@ WinCryptSSHAgent的使用很简单，就单个exe文件，运行后就呆在托�
 
 ### 配置WinSSH
 
-WinSSH是微软维护的openssh分支，已经进入Win10的可选组件。很可能已经默认安装。
+WinSSH是微软维护的openssh分支，已经进入Win10的可选组件。很可能已经默认安装。对于WinSSH重点不是要配置，而且确认Windows自带的ssh agent服务要停下来，避免跟WinCryptSSHAgent混淆了。
 
-首先配置系统环境变量，以便全局使用ssh-agent。正如右键点击托盘的图标，WinSSH的弹窗值。
+在powershell下运行以下命令确认ssh-agent服务停止，不会自动启动。
 
-![](sysenv.png)
+```powershell
+Get-Service ssh-agent
+Get-Service ssh-agent | Set-Service -StartupType Manual
+```
 
-设置后重新打开一个cmd窗口，使用`ssh-add -l`命令，应该就能列出WinCryptSSHAgent内列出的一个系统自带key了。
+然后就可以用`ssh-add -l`确认跟WinCryptSSHAgent的通信是否正常。
+```powershell
+ssh-add -l
 
-要添加自己的key，只需要`ssh-add my_id_ed25519`，输入保护密码，就会看到弹窗说密钥添加成功。
-
-这时候再使用ssh命令直接连接服务器，就会使用这个key了。
+ssh-add # 会添加%USERPROFILE%\.ssh\目录内的所有key
+```
 
 ### 配置WSL2
 
@@ -76,7 +80,6 @@ P系列的工具使用的是共享内存技术，不需要配置，只要运行�
 
 于是WinSCP、Putty、HeidiSQL、sqlyog这些使用putty系列的工具就自动支持了agent。
 
-
 ## 开机启动WinCryptSSHAgent
 
 WinCryptSSHAgent单独exe可以简单地扔到`shell:startup`启动目录开机自动启动而不用理会。
@@ -87,26 +90,28 @@ WinCryptSSHAgent单独exe可以简单地扔到`shell:startup`启动目录开机�
 
 ```
 RunWaitOne(command) {
-  shell := ComObjCreate("WScript.Shell")
-  exec := shell.Exec(ComSpec " /C " command)
-  return exec.StdOut.ReadAll()
+    shell := ComObjCreate("WScript.Shell")
+    exec := shell.Exec(ComSpec " /C " command)
+    return exec.StdOut.ReadAll() . exec.StdErr.ReadAll()
 }
 
 ;SSH KEYAGENT
 >!k::
-  Process,Exist,WinCryptSSHAgent.exe
-  If (ErrorLevel = 0) {
-    Run, WinCryptSSHAgent.exe
-    Sleep, 2000
-  }
-  keys := RunWaitOne("ssh-add -l")
-  if !InStr(keys, "me@mylocation") {
-    Run, %ComSpec% /C ssh-add %USERPROFILE%\.ssh\id_ed25519
-  }
-  Return
+	Process,Exist,WinCryptSSHAgent.exe
+	If (ErrorLevel = 0) {
+		Run, WinCryptSSHAgent.exe
+		MsgBox,, Running, Run WinCryptSSHAgent, 1
+	}
+	keys := RunWaitOne("ssh-add -l")
+	if InStr(keys, "Error") {
+		MsgBox, Failed to run WinCryptSSHAgent:`n`n%keys%
+		return
+	}
+	Run, ssh-add.exe
+	return
 ```
 
-如此配置后，我按下"右Alt+k"，就会开启WinCryptSSHAgent，并出现一个输入key解锁密码终端窗口。
+如此配置后，按下"右Alt+k"，就会开启WinCryptSSHAgent，并出现一个输入key解锁密码终端窗口。
 
 ### 使用WinSSH/OpenSSH的自带功能添加key
 
