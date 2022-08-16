@@ -1,5 +1,5 @@
 ---
-title: Windows下较完善的ssh-agent Keyring工作流程
+title: Windows下较完善的ssh-agent工作流程:WinCryptSSHAgent
 date: 2022-08-12 13:41:01
 tags:
 	- windows
@@ -9,47 +9,79 @@ categories:
 	- linux
 ---
 
-Win下有很多设计良好的终端软件，但是又有很多使用场景需要联合各种SSH终端使用，如同时用xshell进入主机终端、mysql客户端用plink建立隧道、winscp打开文件管理窗口、wsl2内rsync同步配置文件同时git推送到维护仓库……
+Win下有很多设计良好的终端软件，但是又有很多使用场景需要联合各种SSH终端使用，如同时用xshell进入主机终端、mysql客户端用plink建立隧道、winscp打开文件管理窗口、wsl2内rsync同步配置文件，在不同的虚拟机、vps环境内使用github的仓库……
 
-这些软件都有各自的密码密钥管理系统，普通方式是生成一个key，然后转换成各个格式配置到这些终端平台的配置。矛盾的点就是，如果为了安全，key文件都得使用密码保护，那每次连接主机都要解锁一次key，非常繁琐；如果不使用密码保护key，那到处摆放的key文件似乎是其他程序随手可得，有着很大的隐患。
+这些软件都有各自的密码密钥管理系统，普通使用方式是生成一个个人key，然后转换成各个格式配置到这些终端平台的配置。
 
-解决办法就是配置使用key agent，让程序通过agent协议使用一个密钥代理，代理程序独自维护密码保护的key密钥，才能无痛地从不同终端程序连接相同的主机。
+矛盾在于，如果为了安全，key文件都得使用密码保护，那每次连接主机都要解锁一次key，非常繁琐；如果不使用密码保护key，那到处摆放的key文件似乎是其他程序随手可得，有着很大的隐患。
+
+解决办法就是配置使用ssh agent，key文件只需让agent单份处理。其他程序通过协议与agent进行通信认证。
 
 <!-- more -->
-
-配置ssh-agent后的最大妙用是使用git更加方便：在多台vps上使用同一个git仓库，传统方式就需要各台机上分别生成key并添加的git仓库的认证列表。配置agent后，agent可以从vps上的程序转发到工作这台机上的agent，从而完成转发认证（agent forward），git仓库上只需存在一个key。你登出后，其他人就不能再推到你的git仓库了。
-
 这里重点推荐的是[WinCryptSSHAgent](https://github.com/buptczq/WinCryptSSHAgent)项目，其实现了一个ssh-agent程序，但是同时兼容pagent, xagent, hyper-v agent……基本常见的SSH软件都能兼容。
 
-其实作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。[作者是v2ex网友 swchzq](https://www.v2ex.com/t/565640)。
+作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。[作者是v2ex网友 swchzq](https://www.v2ex.com/t/565640)。
 
-WinCryptSSHAgent的使用很简单，就单个exe文件，运行后就呆在托盘区，没有需要安装，没有需要配置的地方。（hyper-v agent需要点一次确认安装），而是要配置其他那些ssh终端程序。
+WinCryptSSHAgent的使用很简单，单个exe，运行后就呆在托盘区，没有需要安装、配置的地方。（hyper-v agent需要点一次确认安装），而是要配置其他那些ssh终端程序。
 
 ## 添加密钥
 
 首先是要把现有的key添加到WinCryptSSHAgent。跟pagent、xagent等程序的设计不同，WinCryptSSHAgent自己不负责维护key的存放，而仅仅作为一个服务端，密钥的来源一个是操作系统内的密钥Store，另外就是通过agent协议添加key。
 
-如果是像作者的需求，使用Yubikey直接插USB，那这个key就自动加载进去操作系统，程序就会自动找到了，不需要特殊操作。
+### 操作系统证书
 
-而传统的文件key，则使用`ssh-add`命令，下面是指使用win10自带的openssh套件的`ssh-add`程序。不过可能需要先配置好WinSSH的环境才能使用`ssh-add`命令进行交互。见下一节中配置WinSSH部分。
+打开`certmgr.msc`内的“个人”类别证书就是可以被WinCryptSSHAgent使用的认证证书（注意需要有私钥）。
 
+![](oscert.png)
+
+如果是像作者的需求，使用Yubikey直接插USB，那这个key就自动加载进去操作系统，程序就会自动找到了，不需要特殊操作。（也许一些支持通用协议的U盾设备也可以，未尝试）。
+
+但也可以自己生成自签证书导入到“个人”证书。这个过程需要用到openssl。
+
+```bash
+# 生成密钥对
+openssl req -subj '/CN=MyGenKey/O=SELF/C=CN' -new -newkey rsa:2048 -days 3650 -nodes -x509 -keyout my.key -out my.cer
+
+# 转换成Win下可导入的pfx格式
+openssl pkcs12 -inkey my.key -in my.cer -export -out mygenkey.pfx
+```
+
+输出的`mygenkey.pfx`在Win下双击即可进行导入。导入过程中有个挺有趣的选项，不可更改的：
+
+![](oskeyconfirm.png)
+
+勾上后每次使用该密钥都会操作系统的弹窗弹窗，来确认当前密钥的使用。
+
+这种方式只能使用rsa密钥。
+
+### OpenSSH证书
+
+OpenSSH证书用的是另外一个体系，跟操作系统的证书管理无关。
+
+WinCryptSSHAgent跟Openssh的ssh-agent服务兼容，使用命名管道跟ssh工具通信，使用`ssh-add`命令进行密钥的维护。
+
+如无意外只需要启动WinCryptSSHAgent后就能使用Win10自带的`ssh-add`命令，不需特殊配置。但有可能出现错误或者冲突，常见是因为Win10自带的OpenSSH-Agent服务正在运行中，需要停止，见下一节WinSSH环境的配置描述。
+
+使用OpenSSH证书好处是能够使用方便的ed25519证书、兼容已有的证书。而WinCryptSSHAgent则会在右下角弹窗通知每次密钥的使用。比起默认的openssh-agent静默服务，也提供了一定的安全性改善。
 
 ## 配置各种终端
 
-重点还是要让各种终端程序来使用这个agent，正如上述配置ssh-add命令的工作模式，终端都需要一个环境变量来找到agent的通信位置。
+要让各种终端程序来使用这个agent，如上述配置`ssh-add`命令的工作模式，终端程序需要找到agent的通信位置。
 
 ### 配置WinSSH
 
-WinSSH是微软维护的openssh分支，已经进入Win10的可选组件。很可能已经默认安装。对于WinSSH重点不是要配置，而且确认Windows自带的ssh agent服务要停下来，避免跟WinCryptSSHAgent混淆了。
+WinSSH是微软维护的openssh分支，已经进入Win10的可选组件，很可能已经默认安装。它会自动找到设置的命名管道跟agent进行通信。
 
-在powershell下运行以下命令确认ssh-agent服务停止，不会自动启动。
+对于WinSSH重点不是要配置，而且确认Windows自带的openssh-agent服务要停下来，避免跟WinCryptSSHAgent冲突或者混淆了。有些情况下WinCryptSSHAgent[启动即报错命名管道权限问题](https://github.com/buptczq/WinCryptSSHAgent/issues/29)，就是这个原因。
+
+在PowerShell(管理员权限)下运行以下命令确认ssh-agent服务停止，不自动启动。
 
 ```powershell
-Get-Service ssh-agent
+Get-Service ssh-agent | Stop-Service
 Get-Service ssh-agent | Set-Service -StartupType Manual
 ```
 
-然后就可以用`ssh-add -l`确认跟WinCryptSSHAgent的通信是否正常。
+可以用`ssh-add -l`确认跟WinCryptSSHAgent的通信是否正常。
 ```powershell
 ssh-add -l
 
@@ -76,7 +108,7 @@ XShell不用配置变量，只需要打个勾。
 
 ### Putty/Plink
 
-P系列的工具使用的是共享内存技术，不需要配置，只要运行他们就自动找到agent，赞。
+P系列的工具使用的是共享内存技术，不需要配置，只要运行就自动找到agent。
 
 于是WinSCP、Putty、HeidiSQL、sqlyog这些使用putty系列的工具就自动支持了agent。
 
@@ -127,4 +159,3 @@ Host *
 重点是`AddKeysToAgent yes`这句，如果agent里面并没有key，ssh会读取`.ssh/id_xxx`，如果解锁认证成功，就顺便通过agent协议把这个key添加到agent。
 
 如果主要使用VSCode的SSH Remote功能，那首次连接时候解锁一次密钥，密钥就呆在agent中了，非常方便。
-
