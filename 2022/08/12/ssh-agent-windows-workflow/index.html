@@ -10,7 +10,7 @@
   
   <title>
     
-      Windows下较完善的ssh-agent Keyring工作流程 | 无证程序员的PT桑
+      Windows下较完善的ssh-agent工作流程:WinCryptSSHAgent | 无证程序员的PT桑
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -165,7 +165,7 @@
 </header>
 
     <div id="article-banner">
-  <h2>Windows下较完善的ssh-agent Keyring工作流程</h2>
+  <h2>Windows下较完善的ssh-agent工作流程:WinCryptSSHAgent</h2>
   <p class="post-date">2022-08-12</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
@@ -174,24 +174,36 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><p>Win下有很多设计良好的终端软件，但是又有很多使用场景需要联合各种SSH终端使用，如同时用xshell进入主机终端、mysql客户端用plink建立隧道、winscp打开文件管理窗口、wsl2内rsync同步配置文件同时git推送到维护仓库……</p>
-<p>这些软件都有各自的密码密钥管理系统，普通方式是生成一个key，然后转换成各个格式配置到这些终端平台的配置。矛盾的点就是，如果为了安全，key文件都得使用密码保护，那每次连接主机都要解锁一次key，非常繁琐；如果不使用密码保护key，那到处摆放的key文件似乎是其他程序随手可得，有着很大的隐患。</p>
-<p>解决办法就是配置使用key agent，让程序通过agent协议使用一个密钥代理，代理程序独自维护密码保护的key密钥，才能无痛地从不同终端程序连接相同的主机。</p>
+    <section class="markdown-content"><p>Win下有很多设计良好的终端软件，但是又有很多使用场景需要联合各种SSH终端使用，如同时用xshell进入主机终端、mysql客户端用plink建立隧道、winscp打开文件管理窗口、wsl2内rsync同步配置文件，在不同的虚拟机、vps环境内使用github的仓库……</p>
+<p>这些软件都有各自的密码密钥管理系统，普通使用方式是生成一个个人key，然后转换成各个格式配置到这些终端平台的配置。</p>
+<p>矛盾在于，如果为了安全，key文件都得使用密码保护，那每次连接主机都要解锁一次key，非常繁琐；如果不使用密码保护key，那到处摆放的key文件似乎是其他程序随手可得，有着很大的隐患。</p>
+<p>解决办法就是配置使用ssh agent，key文件只需让agent单份处理。其他程序通过协议与agent进行通信认证。</p>
 <span id="more"></span>
-
-<p>配置ssh-agent后的最大妙用是使用git更加方便：在多台vps上使用同一个git仓库，传统方式就需要各台机上分别生成key并添加的git仓库的认证列表。配置agent后，agent可以从vps上的程序转发到工作这台机上的agent，从而完成转发认证（agent forward），git仓库上只需存在一个key。你登出后，其他人就不能再推到你的git仓库了。</p>
 <p>这里重点推荐的是<a target="_blank" rel="noopener" href="https://github.com/buptczq/WinCryptSSHAgent">WinCryptSSHAgent</a>项目，其实现了一个ssh-agent程序，但是同时兼容pagent, xagent, hyper-v agent……基本常见的SSH软件都能兼容。</p>
-<p>其实作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/565640">作者是v2ex网友 swchzq</a>。</p>
-<p>WinCryptSSHAgent的使用很简单，就单个exe文件，运行后就呆在托盘区，没有需要安装，没有需要配置的地方。（hyper-v agent需要点一次确认安装），而是要配置其他那些ssh终端程序。</p>
+<p>作者是为了使用Yubikey而造的万能兼容层，但是用来管理文件密钥也是非常方便的。<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/565640">作者是v2ex网友 swchzq</a>。</p>
+<p>WinCryptSSHAgent的使用很简单，单个exe，运行后就呆在托盘区，没有需要安装、配置的地方。（hyper-v agent需要点一次确认安装），而是要配置其他那些ssh终端程序。</p>
 <h2 id="添加密钥"><a href="#添加密钥" class="headerlink" title="添加密钥"></a>添加密钥</h2><p>首先是要把现有的key添加到WinCryptSSHAgent。跟pagent、xagent等程序的设计不同，WinCryptSSHAgent自己不负责维护key的存放，而仅仅作为一个服务端，密钥的来源一个是操作系统内的密钥Store，另外就是通过agent协议添加key。</p>
-<p>如果是像作者的需求，使用Yubikey直接插USB，那这个key就自动加载进去操作系统，程序就会自动找到了，不需要特殊操作。</p>
-<p>而传统的文件key，则使用<code>ssh-add</code>命令，下面是指使用win10自带的openssh套件的<code>ssh-add</code>程序。不过可能需要先配置好WinSSH的环境才能使用<code>ssh-add</code>命令进行交互。见下一节中配置WinSSH部分。</p>
-<h2 id="配置各种终端"><a href="#配置各种终端" class="headerlink" title="配置各种终端"></a>配置各种终端</h2><p>重点还是要让各种终端程序来使用这个agent，正如上述配置ssh-add命令的工作模式，终端都需要一个环境变量来找到agent的通信位置。</p>
-<h3 id="配置WinSSH"><a href="#配置WinSSH" class="headerlink" title="配置WinSSH"></a>配置WinSSH</h3><p>WinSSH是微软维护的openssh分支，已经进入Win10的可选组件。很可能已经默认安装。对于WinSSH重点不是要配置，而且确认Windows自带的ssh agent服务要停下来，避免跟WinCryptSSHAgent混淆了。</p>
-<p>在powershell下运行以下命令确认ssh-agent服务停止，不会自动启动。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Service</span> ssh<span class="literal">-agent</span></span><br><span class="line"><span class="built_in">Get-Service</span> ssh<span class="literal">-agent</span> | <span class="built_in">Set-Service</span> <span class="literal">-StartupType</span> Manual</span><br></pre></td></tr></table></figure>
+<h3 id="操作系统证书"><a href="#操作系统证书" class="headerlink" title="操作系统证书"></a>操作系统证书</h3><p>打开<code>certmgr.msc</code>内的“个人”类别证书就是可以被WinCryptSSHAgent使用的认证证书（注意需要有私钥）。</p>
+<p><img src="/2022/08/12/ssh-agent-windows-workflow/oscert.png"></p>
+<p>如果是像作者的需求，使用Yubikey直接插USB，那这个key就自动加载进去操作系统，程序就会自动找到了，不需要特殊操作。（也许一些支持通用协议的U盾设备也可以，未尝试）。</p>
+<p>但也可以自己生成自签证书导入到“个人”证书。这个过程需要用到openssl。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成密钥对</span></span><br><span class="line">openssl req -subj <span class="string">&#x27;/CN=MyGenKey/O=SELF/C=CN&#x27;</span> -new -newkey rsa:2048 -days 3650 -nodes -x509 -keyout my.key -out my.cer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换成Win下可导入的pfx格式</span></span><br><span class="line">openssl pkcs12 -inkey my.key -<span class="keyword">in</span> my.cer -<span class="built_in">export</span> -out mygenkey.pfx</span><br></pre></td></tr></table></figure>
 
-<p>然后就可以用<code>ssh-add -l</code>确认跟WinCryptSSHAgent的通信是否正常。</p>
+<p>输出的<code>mygenkey.pfx</code>在Win下双击即可进行导入。导入过程中有个挺有趣的选项，不可更改的：</p>
+<p><img src="/2022/08/12/ssh-agent-windows-workflow/oskeyconfirm.png"></p>
+<p>勾上后每次使用该密钥都会操作系统的弹窗弹窗，来确认当前密钥的使用。</p>
+<p>这种方式只能使用rsa密钥。</p>
+<h3 id="OpenSSH证书"><a href="#OpenSSH证书" class="headerlink" title="OpenSSH证书"></a>OpenSSH证书</h3><p>OpenSSH证书用的是另外一个体系，跟操作系统的证书管理无关。</p>
+<p>WinCryptSSHAgent跟Openssh的ssh-agent服务兼容，使用命名管道跟ssh工具通信，使用<code>ssh-add</code>命令进行密钥的维护。</p>
+<p>如无意外只需要启动WinCryptSSHAgent后就能使用Win10自带的<code>ssh-add</code>命令，不需特殊配置。但有可能出现错误或者冲突，常见是因为Win10自带的OpenSSH-Agent服务正在运行中，需要停止，见下一节WinSSH环境的配置描述。</p>
+<p>使用OpenSSH证书好处是能够使用方便的ed25519证书、兼容已有的证书。而WinCryptSSHAgent则会在右下角弹窗通知每次密钥的使用。比起默认的openssh-agent静默服务，也提供了一定的安全性改善。</p>
+<h2 id="配置各种终端"><a href="#配置各种终端" class="headerlink" title="配置各种终端"></a>配置各种终端</h2><p>要让各种终端程序来使用这个agent，如上述配置<code>ssh-add</code>命令的工作模式，终端程序需要找到agent的通信位置。</p>
+<h3 id="配置WinSSH"><a href="#配置WinSSH" class="headerlink" title="配置WinSSH"></a>配置WinSSH</h3><p>WinSSH是微软维护的openssh分支，已经进入Win10的可选组件，很可能已经默认安装。它会自动找到设置的命名管道跟agent进行通信。</p>
+<p>对于WinSSH重点不是要配置，而且确认Windows自带的openssh-agent服务要停下来，避免跟WinCryptSSHAgent冲突或者混淆了。有些情况下WinCryptSSHAgent<a target="_blank" rel="noopener" href="https://github.com/buptczq/WinCryptSSHAgent/issues/29">启动即报错命名管道权限问题</a>，就是这个原因。</p>
+<p>在PowerShell(管理员权限)下运行以下命令确认ssh-agent服务停止，不自动启动。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Service</span> ssh<span class="literal">-agent</span> | <span class="built_in">Stop-Service</span></span><br><span class="line"><span class="built_in">Get-Service</span> ssh<span class="literal">-agent</span> | <span class="built_in">Set-Service</span> <span class="literal">-StartupType</span> Manual</span><br></pre></td></tr></table></figure>
+
+<p>可以用<code>ssh-add -l</code>确认跟WinCryptSSHAgent的通信是否正常。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh<span class="literal">-add</span> <span class="literal">-l</span></span><br><span class="line"></span><br><span class="line">ssh<span class="literal">-add</span> <span class="comment"># 会添加%USERPROFILE%\.ssh\目录内的所有key</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="配置WSL2"><a href="#配置WSL2" class="headerlink" title="配置WSL2"></a>配置WSL2</h3><p>WSL2内其实是个虚拟机环境，程序建立了个代理隧道，而WSL2内则打开一个socat进行管道转发实现的。</p>
@@ -201,7 +213,7 @@
 <p><img src="/2022/08/12/ssh-agent-windows-workflow/xshell.png"></p>
 <p>这样以后新建的会话都会尝试联系agent。</p>
 <p>已创建的保存会话，需要在会话管理器内设置它们各自的属性（Tips：可以全选然后点属性按钮，一次过更改所有所选会话）。</p>
-<h3 id="Putty-x2F-Plink"><a href="#Putty-x2F-Plink" class="headerlink" title="Putty&#x2F;Plink"></a>Putty&#x2F;Plink</h3><p>P系列的工具使用的是共享内存技术，不需要配置，只要运行他们就自动找到agent，赞。</p>
+<h3 id="Putty-x2F-Plink"><a href="#Putty-x2F-Plink" class="headerlink" title="Putty&#x2F;Plink"></a>Putty&#x2F;Plink</h3><p>P系列的工具使用的是共享内存技术，不需要配置，只要运行就自动找到agent。</p>
 <p>于是WinSCP、Putty、HeidiSQL、sqlyog这些使用putty系列的工具就自动支持了agent。</p>
 <h2 id="开机启动WinCryptSSHAgent"><a href="#开机启动WinCryptSSHAgent" class="headerlink" title="开机启动WinCryptSSHAgent"></a>开机启动WinCryptSSHAgent</h2><p>WinCryptSSHAgent单独exe可以简单地扔到<code>shell:startup</code>启动目录开机自动启动而不用理会。</p>
 <h3 id="使用AutoHotkey来控制添加key"><a href="#使用AutoHotkey来控制添加key" class="headerlink" title="使用AutoHotkey来控制添加key"></a>使用AutoHotkey来控制添加key</h3><p>我习惯使用AutoHotkey来启动一些小工具，于是把启动WinCryptSSHAgent和添加key的逻辑都整合到ahk脚本中。</p>
@@ -267,7 +279,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5"><span class="toc-nav-text">添加密钥</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AE%E5%90%84%E7%A7%8D%E7%BB%88%E7%AB%AF"><span class="toc-nav-text">配置各种终端</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AEWinSSH"><span class="toc-nav-text">配置WinSSH</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AEWSL2"><span class="toc-nav-text">配置WSL2</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AEXShell"><span class="toc-nav-text">配置XShell</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Putty-x2F-Plink"><span class="toc-nav-text">Putty&#x2F;Plink</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8WinCryptSSHAgent"><span class="toc-nav-text">开机启动WinCryptSSHAgent</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8AutoHotkey%E6%9D%A5%E6%8E%A7%E5%88%B6%E6%B7%BB%E5%8A%A0key"><span class="toc-nav-text">使用AutoHotkey来控制添加key</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8WinSSH-x2F-OpenSSH%E7%9A%84%E8%87%AA%E5%B8%A6%E5%8A%9F%E8%83%BD%E6%B7%BB%E5%8A%A0key"><span class="toc-nav-text">使用WinSSH&#x2F;OpenSSH的自带功能添加key</span></a></li></ol></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5"><span class="toc-nav-text">添加密钥</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E8%AF%81%E4%B9%A6"><span class="toc-nav-text">操作系统证书</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#OpenSSH%E8%AF%81%E4%B9%A6"><span class="toc-nav-text">OpenSSH证书</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AE%E5%90%84%E7%A7%8D%E7%BB%88%E7%AB%AF"><span class="toc-nav-text">配置各种终端</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AEWinSSH"><span class="toc-nav-text">配置WinSSH</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AEWSL2"><span class="toc-nav-text">配置WSL2</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AEXShell"><span class="toc-nav-text">配置XShell</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Putty-x2F-Plink"><span class="toc-nav-text">Putty&#x2F;Plink</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8WinCryptSSHAgent"><span class="toc-nav-text">开机启动WinCryptSSHAgent</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8AutoHotkey%E6%9D%A5%E6%8E%A7%E5%88%B6%E6%B7%BB%E5%8A%A0key"><span class="toc-nav-text">使用AutoHotkey来控制添加key</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8WinSSH-x2F-OpenSSH%E7%9A%84%E8%87%AA%E5%B8%A6%E5%8A%9F%E8%83%BD%E6%B7%BB%E5%8A%A0key"><span class="toc-nav-text">使用WinSSH&#x2F;OpenSSH的自带功能添加key</span></a></li></ol></li></ol>
     
   </div>
 </aside>
